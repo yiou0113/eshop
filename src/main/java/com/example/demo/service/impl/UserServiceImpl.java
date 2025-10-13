@@ -4,6 +4,7 @@ import com.example.demo.dao.UserDAO;
 import com.example.demo.model.User;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -14,6 +15,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserDAO userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
 
     @Override
     public List<User> getAllUsers() {
@@ -27,8 +31,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void saveUser(User user) {
+        // 加密密碼
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);
+
         userRepository.save(user);
     }
+
 
     @Override
     public void updateUser(Long id, User updatedUser) {
@@ -36,6 +45,10 @@ public class UserServiceImpl implements UserService {
         if (existingUser != null) {
             existingUser.setName(updatedUser.getName());
             existingUser.setEmail(updatedUser.getEmail());
+        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+                String encodedPassword = passwordEncoder.encode(updatedUser.getPassword());
+                existingUser.setPassword(encodedPassword);
+            }
             userRepository.save(existingUser);
         }
     }
@@ -44,4 +57,10 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(Long id) {
         userRepository.delete(id);
     }
+    
+    @Override
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
 }

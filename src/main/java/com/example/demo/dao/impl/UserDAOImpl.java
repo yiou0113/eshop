@@ -41,4 +41,13 @@ public class UserDAOImpl implements UserDAO {
             getCurrentSession().delete(user);
         }
     }
+    
+    @Override
+    public User findByEmail(String email) {
+        return getCurrentSession()
+            .createQuery("FROM User WHERE email = :email", User.class)
+            .setParameter("email", email)
+            .uniqueResult();
+    }
+
 }
