@@ -48,11 +48,11 @@ public class LoginController {
         }
         return "redirect:/login"; // 未登入回 login
     }
-    /*@GetMapping("/logout")
+    @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/login";
-    }*/
+    }
 }
 
 
