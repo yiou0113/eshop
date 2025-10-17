@@ -41,4 +41,12 @@ public class ProductDAOImpl implements ProductDAO {
             getCurrentSession().delete(product);
         }
     }
+    @Override
+    public List<Product> findPaginated(int page, int size) {
+        return getCurrentSession()
+                .createQuery("FROM Product", Product.class)
+                .setFirstResult((page - 1) * size) // 計算從哪一筆開始
+                .setMaxResults(size)              // 每頁顯示多少筆
+                .list();
+    }
 }

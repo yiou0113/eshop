@@ -12,4 +12,7 @@ public interface ProductService {
     void saveProduct(Product product);
     
     void deleteProduct(Long id);
+    
+    List<Product> getProductsByPage(int page, int size);
+
 }

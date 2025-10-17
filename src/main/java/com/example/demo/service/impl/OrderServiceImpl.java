@@ -37,7 +37,7 @@ public class OrderServiceImpl implements OrderService {
 		order.setCustomer(cart.getCustomer());
 		order.setStatus("待付款");
 
-		BigDecimal total = BigDecimal.ZERO;
+		BigDecimal total = BigDecimal.ZERO;//BigDecimal是物件不是型別,可以避免重複new
 
 		for (CartItem cartItem : cart.getItems()) {
 			OrderItem orderItem = new OrderItem();
@@ -67,7 +67,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public Order findById(Long id) {
+	public Order getOrderById(Long id) {
 		Order order = orderDAO.findById(id);
 	    if (order != null) {
 	        order.getItems().size(); // 強制載入關聯，避免 LazyInitializationException !!!重要
@@ -81,10 +81,10 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public List<Order> findByCustomerId(Long customerId) {
+	public List<Order> getOrderByCustomerId(Long customerId) {
 		List<Order> orders = orderDAO.findByCustomerId(customerId);
 		if (orders == null) {
-			return List.of(); // 避免回傳 null
+			return List.of(); //相較於new一個List更為節省,避免回傳 null
 		}
 		return orders;
 	}

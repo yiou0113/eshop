@@ -9,9 +9,9 @@ public interface OrderService {
 	
 	void saveOrder(Order order);
 
-    Order findById(Long id);
+    Order getOrderById(Long id);
 
     List<Order> getAllOrders();
 
-    List<Order> findByCustomerId(Long customerId);
+    List<Order> getOrderByCustomerId(Long customerId);
 }

@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -15,21 +16,27 @@ import java.util.List;
 @RequestMapping("/products")
 public class ProductController {
 
-    @Autowired
-    private ProductService productService;
+	@Autowired
+	private ProductService productService;
 
-    @GetMapping
-    public String listProducts(Model model) {
-        List<Product> products = productService.getAllProducts();
-        model.addAttribute("products", products);
-        return "product-list"; // 對應 product-list.html
-    }
+	@GetMapping
+	public String listProducts(@RequestParam(defaultValue = "1") int page, Model model) {
+		int pageSize = 12; // 每頁幾筆
+		List<Product> products = productService.getProductsByPage(page, pageSize);
+		int totalProducts = productService.getAllProducts().size();
+		int totalPages = (int) Math.ceil((double) totalProducts / pageSize);
+		
+		model.addAttribute("products", products);
+		model.addAttribute("currentPage", page);
+	    model.addAttribute("totalPages", totalPages);
+		return "product-list"; // 對應 product-list.html
+	}
 
-    @GetMapping("/{id}")
-    public String viewProductDetail(@PathVariable Long id, Model model) {
-        Product product = productService.getProductById(id);
-        model.addAttribute("product", product);
-        return "product-detail"; // 對應 product-detail.html
-    }
+	@GetMapping("/{id}")
+	public String viewProductDetail(@PathVariable Long id, Model model) {
+		Product product = productService.getProductById(id);
+		model.addAttribute("product", product);
+		return "product-detail"; // 對應 product-detail.html
+	}
 
 }

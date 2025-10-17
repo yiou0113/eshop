@@ -13,4 +13,6 @@ public interface ProductDAO {
     void save(Product product);
     
     void delete(Long id);
+    
+    List<Product> findPaginated(int page, int size);
 }

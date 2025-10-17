@@ -31,8 +31,8 @@ public class OrderController {
         if (user == null) {
             return "redirect:/login";
         }
-        Customer customer = customerService.findByUserId(user.getId());
-        List<Order> orders = orderService.findByCustomerId(customer.getId());
+        Customer customer = customerService.getCustomerByUserId(user.getId());
+        List<Order> orders = orderService.getOrderByCustomerId(customer.getId());
         if (orders.isEmpty()) {
             model.addAttribute("message", "尚未成立訂單");
         } else {
@@ -48,7 +48,7 @@ public class OrderController {
         if (user == null) {
             return "redirect:/login";
         }
-        Customer customer = customerService.findByUserId(user.getId());
+        Customer customer = customerService.getCustomerByUserId(user.getId());
 
         try {
             Order order = orderService.createOrder(customer.getId());
@@ -67,9 +67,9 @@ public class OrderController {
         if (user == null) {
             return "redirect:/login";
         }
-        Customer customer = customerService.findByUserId(user.getId());
+        Customer customer = customerService.getCustomerByUserId(user.getId());
 
-        Order order = orderService.findById(id);
+        Order order = orderService.getOrderById(id);
         if (order == null || !order.getCustomer().getId().equals(customer.getId())) {
             return "redirect:/orders";
         }

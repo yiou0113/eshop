@@ -30,7 +30,7 @@ public class CartController {
         if (user == null) {
             return "redirect:/login"; // 未登入回 login
         }
-    	Customer customer = customerSecvice.findByUserId(user.getId());
+    	Customer customer = customerSecvice.getCustomerByUserId(user.getId());
     	if (customer == null) {
             return "redirect:/login";
         }
@@ -57,7 +57,7 @@ public class CartController {
                             HttpSession session) {
     	User user = (User) session.getAttribute("loggedInUser");
         if (user == null) return "redirect:/login";
-        Customer customer = customerSecvice.findByUserId(user.getId());
+        Customer customer = customerSecvice.getCustomerByUserId(user.getId());
     	if (customer == null) {
             return "redirect:/login";
         }
@@ -72,7 +72,7 @@ public class CartController {
                                  HttpSession session) {
     	User user = (User) session.getAttribute("loggedInUser");
         if (user == null) return "redirect:/login";
-        Customer customer = customerSecvice.findByUserId(user.getId());
+        Customer customer = customerSecvice.getCustomerByUserId(user.getId());
     	if (customer == null) {
             return "redirect:/login";
         }
@@ -86,7 +86,7 @@ public class CartController {
                              HttpSession session) {
     	User user = (User) session.getAttribute("loggedInUser");
         if (user == null) return "redirect:/login";
-        Customer customer = customerSecvice.findByUserId(user.getId());
+        Customer customer = customerSecvice.getCustomerByUserId(user.getId());
     	if (customer == null) {
             return "redirect:/login";
         }

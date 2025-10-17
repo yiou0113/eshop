@@ -5,5 +5,5 @@ import com.example.demo.model.Customer;
 public interface CustomerService {
     void registerCustomer(String name, String email, String password, String phone, String address);
     
-    Customer findByUserId(Long userId);
+    Customer getCustomerByUserId(Long userId);
 }

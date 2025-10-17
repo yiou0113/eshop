@@ -34,4 +34,8 @@ public class ProductServiceImpl implements ProductService {
     public void deleteProduct(Long id) {
         productDAO.delete(id);
     }
+    @Override
+    public List<Product> getProductsByPage(int page, int size) {
+        return productDAO.findPaginated(page, size);
+    }
 }

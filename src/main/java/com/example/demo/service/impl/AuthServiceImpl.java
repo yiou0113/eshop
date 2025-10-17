@@ -1,6 +1,5 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.dao.UserDAO;
 import com.example.demo.model.User;
 import com.example.demo.service.AuthService;
 import com.example.demo.service.UserService;
@@ -28,6 +27,5 @@ public class AuthServiceImpl implements AuthService {
     	    return user; // 密碼正確
     	}
     	return null;
-
     }
 }

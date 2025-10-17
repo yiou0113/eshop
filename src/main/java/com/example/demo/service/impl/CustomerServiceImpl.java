@@ -44,7 +44,7 @@ public class CustomerServiceImpl implements CustomerService {
         // 儲存（會自動保存關聯對象）
         userDAO.save(user);
     }
-    public Customer findByUserId(Long userId) {
+    public Customer getCustomerByUserId(Long userId) {
         return customerDAO.findByUserId(userId);
     }
 }
