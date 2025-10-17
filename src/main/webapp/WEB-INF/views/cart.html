@@ -1,46 +1,52 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>購物車</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+<meta charset="UTF-8">
+<title>購物車</title>
 </head>
 <body>
-<h1>我的購物車</h1>
+	<h1>我的購物車</h1>
 
-<table border="1">
-    <thead>
-    <tr>
-        <th>商品名稱</th>
-        <th>單價</th>
-        <th>數量</th>
-        <th>小計</th>
-        <th>操作</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="item : ${cart.items}">
-        <td th:text="${item.product.name}">商品名稱</td>
-        <td th:text="${item.price}">單價</td>
-        <td>
-            <form th:action="@{/cart/update}" method="post">
-                <input type="hidden" name="productId" th:value="${item.product.id}">
-                <input type="number" name="quantity" min="1" th:value="${item.quantity}">
-                <button type="submit">更新</button>
-            </form>
-        </td>
-        <td th:text="${item.subtotal}">小計</td>
-        <td>
-            <form th:action="@{/cart/remove}" method="post">
-                <input type="hidden" name="productId" th:value="${item.product.id}">
-                <button type="submit">刪除</button>
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
+	<table border="1">
+		<thead>
+			<tr>
+				<th>商品名稱</th>
+				<th>單價</th>
+				<th>數量</th>
+				<th>小計</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="item : ${cart.items}">
+				<td th:text="${item.product.name}">商品名稱</td>
+				<td th:text="${item.price}">單價</td>
+				<td>
+					<form th:action="@{/cart/update}" method="post">
+						<input type="hidden" name="productId"
+							th:value="${item.product.id}"> <input type="number"
+							name="quantity" min="1" th:value="${item.quantity}">
+						<button type="submit">更新</button>
+					</form>
+				</td>
+				<td th:text="${item.subtotal}">小計</td>
+				<td>
+					<form th:action="@{/cart/remove}" method="post">
+						<input type="hidden" name="productId"
+							th:value="${item.product.id}">
+						<button type="submit">刪除</button>
+					</form>
+				</td>
 
-<h3>總價: <span th:text="${total}">0</span></h3>
+			</tr>
+		</tbody>
+	</table>
 
+	<h3>
+		總價: <span th:text="${total}">0</span>
+	</h3>
+	<form th:action="@{/orders/create}" method="post">
+		<button type="submit">結帳並建立訂單</button>
+	</form>
 </body>
 </html>

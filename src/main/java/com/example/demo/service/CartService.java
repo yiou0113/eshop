@@ -10,14 +10,14 @@ public interface CartService {
 
     BigDecimal getCartTotal(Long userId);
 
-    void removeItem(Long userId, Long productId);
+    void removeItem(Long customerId, Long productId);
 
-    void updateQuantity(Long userId, Long productId, int quantity);
+    void updateQuantity(Long customerId, Long productId, int quantity);
     
-    Cart createCartForUser(Long userId);
+    Cart createCartForUser(Long customerId);
     
-    void clearCart(Long userId);
+    void clearCart(Long customerId);
     
-    Cart getCartByUserId(Long userId);
+    Cart getCartByCustomerId(Long customerId);
 
 }

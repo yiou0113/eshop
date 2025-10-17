@@ -5,7 +5,7 @@ import java.util.Optional;
 import com.example.demo.model.Cart;
 
 public interface CartDAO {
-	Optional<Cart> findByUserId(Long userId);
+	Optional<Cart> findByCustomerId(Long custId);
 
     void save(Cart cart);
 

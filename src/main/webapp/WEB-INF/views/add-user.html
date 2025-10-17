@@ -11,10 +11,7 @@
 
     <!-- 表單提交到 /users/save -->
     <form th:action="@{/users/save}" th:object="${user}" method="post">
-        <div class="mb-3">
-            <label for="name" class="form-label">Name</label>
-            <input type="text" th:field="*{name}" class="form-control" id="name" placeholder="Enter name" required>
-        </div>
+        
 
         <div class="mb-3">
             <label for="email" class="form-label">Email</label>
@@ -23,8 +20,7 @@
 		<div class="mb-3">
             <label for="password" class="form-label">Password</label>
             <input type="password" th:field="*{password}" class="form-control" id="password" placeholder="Enter password" required>
-        </div>
-        
+        </div>     
         <button type="submit" class="btn btn-success">Save</button>
         <a th:href="@{/users}" class="btn btn-secondary">Cancel</a>
     </form>

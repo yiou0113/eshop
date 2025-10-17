@@ -10,4 +10,6 @@ public interface OrderDAO {
 	Order findById(Long id);
 	
 	List<Order> findAll();
+	
+	List<Order> findByCustomerId(Long customerId);
 }

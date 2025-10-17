@@ -23,11 +23,11 @@ public class CartDAOImpl implements CartDAO {
     }
 
     @Override
-    public Optional<Cart> findByUserId(Long userId) {
+    public Optional<Cart> findByCustomerId(Long customerId) {
         try {
             Cart cart = getCurrentSession()
-                    .createQuery("FROM Cart c WHERE c.user.id = :userId", Cart.class)
-                    .setParameter("userId", userId)
+                    .createQuery("FROM Cart c WHERE c.customer.id = :customerId", Cart.class)
+                    .setParameter("customerId", customerId)
                     .uniqueResult();
             return Optional.ofNullable(cart);
         } catch (Exception e) {

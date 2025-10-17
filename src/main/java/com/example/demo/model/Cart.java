@@ -12,8 +12,8 @@ public class Cart {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
+    @JoinColumn(name = "customer_id", referencedColumnName = "id")
+    private Customer customer;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> items = new ArrayList<>();
@@ -21,9 +21,9 @@ public class Cart {
 	public Long getId() {return id;}
 	public void setId(Long id) {this.id = id;}
 
-	public User getUser() {return user;}
-	public void setUser(User user) {this.user = user;}
-
+	public Customer getCustomer() {return customer;}
+	public void setCustomer(Customer customer) {this.customer = customer;}
+	
 	public List<CartItem> getItems() {return items;}
 	public void setItems(List<CartItem> items) {this.items = items;}
     

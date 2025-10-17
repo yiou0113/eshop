@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>我的訂單</title>
+</head>
+<body>
+	<h2>我的訂單</h2>
+
+	<table border="1">
+		<thead>
+			<tr>
+				<th>訂單編號</th>
+				<th>總金額</th>
+				<th>狀態</th>
+				<th>建立日期</th>
+				<th>查看詳情</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="order : ${orders}">
+				<td th:text="${order.id}"></td>
+				<td th:text="${order.totalAmount}"></td>
+				<td th:text="${order.status}"></td>
+				<td th:text="${order.createdAt}"></td>
+				<td><a th:href="@{/orders/{id}(id=${order.id})}">查看</a></td>
+			</tr>
+		</tbody>
+	</table>
+
+	<br>
+	<a th:href="@{/cart}">返回購物車</a>
+</body>
+</html>

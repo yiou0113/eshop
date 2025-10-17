@@ -1,9 +1,11 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Cart;
-import com.example.demo.model.CartItem;
+import com.example.demo.model.Customer;
 import com.example.demo.model.User;
 import com.example.demo.service.CartService;
+import com.example.demo.service.CustomerService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,7 +21,8 @@ public class CartController {
 
     @Autowired
     private CartService cartService;
-
+    @Autowired
+    private CustomerService customerSecvice;
     // 顯示購物車
     @GetMapping
     public String viewCart(HttpSession session, Model model) {
@@ -27,10 +30,16 @@ public class CartController {
         if (user == null) {
             return "redirect:/login"; // 未登入回 login
         }
-
-        Cart cart = cartService.getCartByUserId(user.getId());
+    	Customer customer = customerSecvice.findByUserId(user.getId());
+    	if (customer == null) {
+            return "redirect:/login";
+        }
+    	Cart cart = cartService.getCartByCustomerId(customer.getId());
+        if (cart == null) {
+            cart = new Cart();
+        }
         model.addAttribute("cart", cart);
-        model.addAttribute("total", cartService.getCartTotal(user.getId()));
+        model.addAttribute("total", cartService.getCartTotal(customer.getId()));
         return "cart";
     }
 
@@ -46,10 +55,13 @@ public class CartController {
     public String addToCart(@RequestParam Long productId,
                             @RequestParam int quantity,
                             HttpSession session) {
-        User user = (User) session.getAttribute("loggedInUser");
+    	User user = (User) session.getAttribute("loggedInUser");
         if (user == null) return "redirect:/login";
-
-        cartService.addToCart(user.getId(), productId, quantity);
+        Customer customer = customerSecvice.findByUserId(user.getId());
+    	if (customer == null) {
+            return "redirect:/login";
+        }
+        cartService.addToCart(customer.getId(), productId, quantity);
         return "redirect:/products";
     }
 
@@ -60,8 +72,12 @@ public class CartController {
                                  HttpSession session) {
     	User user = (User) session.getAttribute("loggedInUser");
         if (user == null) return "redirect:/login";
-        cartService.updateQuantity(user.getId(), productId, quantity);
-        return "redirect:/cart?userId=" + user.getId();
+        Customer customer = customerSecvice.findByUserId(user.getId());
+    	if (customer == null) {
+            return "redirect:/login";
+        }
+        cartService.updateQuantity(customer.getId(), productId, quantity);
+        return "redirect:/cart?userId=" + customer.getId();
     }
 
     // 刪除商品
@@ -70,7 +86,11 @@ public class CartController {
                              HttpSession session) {
     	User user = (User) session.getAttribute("loggedInUser");
         if (user == null) return "redirect:/login";
-        cartService.removeItem(user.getId(), productId);
-        return "redirect:/cart?userId=" + user.getId();
+        Customer customer = customerSecvice.findByUserId(user.getId());
+    	if (customer == null) {
+            return "redirect:/login";
+        }
+        cartService.removeItem(customer.getId(), productId);
+        return "redirect:/cart?userId=" + customer.getId();
     }
 }
