@@ -27,7 +27,7 @@ public class OrderServiceTest {
        // 確認 userService 被正確注入
        assertTrue("OrderService 未注入", orderService != null);
        // 執行測試
-       List<Order> order = orderService.findByCustomerId(1L);
+       List<Order> order = orderService.getOrderByCustomerId(1L);
        assertNotNull("使用者不存在", order);
    }
 }
