@@ -22,11 +22,12 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> items = new ArrayList<>();
 
-    @Column(precision = 10, scale = 2)
+    @Column(name="total_amount", precision = 10, scale = 2)
     private BigDecimal totalAmount;
 
     private String status;
-
+    
+    @Column(name="created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
     
     // getter/setter

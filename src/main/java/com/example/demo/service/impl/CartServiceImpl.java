@@ -10,107 +10,167 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.demo.dao.CartDAO;
 import com.example.demo.dao.CustomerDAO;
 import com.example.demo.dao.ProductDAO;
-import com.example.demo.dao.UserDAO;
 import com.example.demo.model.Cart;
 import com.example.demo.model.CartItem;
 import com.example.demo.model.Customer;
 import com.example.demo.model.Product;
-import com.example.demo.model.User;
 import com.example.demo.service.CartService;
 
+/**
+ * CartService 的實作類別
+ *
+ * 此類別負責處理購物車相關的業務邏輯： 
+ * - 新增商品至購物車 
+ * - 計算購物車總金額 
+ * - 移除購物車商品 
+ * - 更新商品數量 
+ * - 清空購物車 
+ * - 根據顧客 ID
+ * - 取得購物車
+ * 使用 @Transactional 確保資料庫操作具有事務一致性。
+ */
 @Service
 @Transactional
 public class CartServiceImpl implements CartService {
+	/** 注入 CartDAO，用於操作購物車資料 */
+	@Autowired
+	private CartDAO cartDAO;
 
-    @Autowired
-    private CartDAO cartDAO;
+	/** 注入 ProductDAO，用於操作商品資料 */
+	@Autowired
+	private ProductDAO productDAO;
 
-    @Autowired
-    private ProductDAO productDAO;
+	/** 注入 UserDAO，用於操作顧客資料 */
+	@Autowired
+	private CustomerDAO customerDAO;
 
-    @Autowired
-    private CustomerDAO customerDAO;
+	/**
+	 * 將商品加入購物車
+	 *
+	 * 若購物車不存在，會自動建立。 若商品已存在，則累加數量並更新小計。
+	 *
+	 * @param customerId 顧客 ID
+	 * @param productId  商品 ID
+	 * @param quantity   數量
+	 */
+	@Override
+	public void addToCart(Long customerId, Long productId, int quantity) {
+		Cart cart = cartDAO.findByCustomerId(customerId).orElseGet(() -> createCartForCustomer(customerId));
 
-    @Override
-    public void addToCart(Long customerId, Long productId, int quantity) {
-        Cart cart = cartDAO.findByCustomerId(customerId)
-                .orElseGet(() -> createCartForUser(customerId));
+		Product product = productDAO.findById(productId);
+		Optional<CartItem> existingItem = cart.getItems().stream().filter(i -> i.getProduct().getId().equals(productId))
+				.findFirst();
 
-        Product product = productDAO.findById(productId);
-        Optional<CartItem> existingItem = cart.getItems().stream()
-                .filter(i -> i.getProduct().getId().equals(productId))
-                .findFirst();
+		if (existingItem.isPresent()) {
+			CartItem item = existingItem.get();
+			item.setQuantity(item.getQuantity() + quantity);
+			item.updateSubtotal();
+		} else {
+			CartItem item = new CartItem();
+			item.setCart(cart);
+			item.setProduct(product);
+			item.setPrice(product.getPrice());
+			item.setQuantity(quantity);
+			item.updateSubtotal();
+			cart.getItems().add(item);
+		}
 
-        if (existingItem.isPresent()) {
-            CartItem item = existingItem.get();
-            item.setQuantity(item.getQuantity() + quantity);
-            item.updateSubtotal();
-        } else {
-            CartItem item = new CartItem();
-            item.setCart(cart);
-            item.setProduct(product);
-            item.setPrice(product.getPrice());
-            item.setQuantity(quantity);
-            item.updateSubtotal();
-            cart.getItems().add(item);
-        }
+		cartDAO.save(cart);
+	}
 
-        cartDAO.save(cart);
-    }
+	/**
+	 * 計算購物車總金額
+	 *
+	 * @param customerId 顧客 ID
+	 * @return 購物車總金額（BigDecimal）
+	 */
+	@Override
+	public BigDecimal getCartTotal(Long customerId) {
+		Cart cart = cartDAO.findByCustomerId(customerId).orElseThrow();
+		return cart.getItems().stream().peek(CartItem::updateSubtotal) // 確保 subtotal 更新
+				.map(CartItem::getSubtotal) // 取得 BigDecimal
+				.reduce(BigDecimal.ZERO, BigDecimal::add);
+	}
 
-    @Override
-    public BigDecimal getCartTotal(Long customerId) {
-        Cart cart = cartDAO.findByCustomerId(customerId).orElseThrow();
-        return cart.getItems().stream()
-                .peek(CartItem::updateSubtotal) // 確保 subtotal 更新
-                .map(CartItem::getSubtotal)     // 取得 BigDecimal
-                .reduce(BigDecimal.ZERO,BigDecimal::add);
-    }
+	/**
+	 * 移除購物車中指定商品
+	 *
+	 * @param customerId 顧客 ID
+	 * @param productId  商品 ID
+	 */
+	@Override
+	public void removeItem(Long customerId, Long productId) {
+		Cart cart = cartDAO.findByCustomerId(customerId).orElseThrow(); // 如果找不到會返回 null
+		if (cart == null) {
+			throw new RuntimeException("購物車不存在，無法刪除商品");
+		}
+		cartDAO.deleteByCartIdAndProductId(cart.getId(), productId);
+	}
 
-    @Override
-    public void removeItem(Long customerId, Long productId) {
-        Cart cart = cartDAO.findByCustomerId(customerId).orElseThrow();
-        cart.getItems().removeIf(i -> i.getProduct().getId().equals(productId));
-        cartDAO.save(cart);
-    }
+	/**
+	 * 更新購物車中指定商品的數量
+	 *
+	 * @param customerId 顧客 ID
+	 * @param productId  商品 ID
+	 * @param quantity   新的數量
+	 */
+	@Override
+	public void updateQuantity(Long customerId, Long productId, int quantity) {
+		Cart cart = cartDAO.findByCustomerId(customerId).orElseThrow();
+		for (CartItem item : cart.getItems()) {
+			if (item.getProduct().getId().equals(productId)) {
+				item.setQuantity(quantity);
+				item.updateSubtotal();
+			}
+		}
+		cartDAO.save(cart);
+	}
 
-    @Override
-    public void updateQuantity(Long customerId, Long productId, int quantity) {
-        Cart cart = cartDAO.findByCustomerId(customerId).orElseThrow();
-        for (CartItem item : cart.getItems()) {
-            if (item.getProduct().getId().equals(productId)) {
-                item.setQuantity(quantity);
-                item.updateSubtotal();
-            }
-        }
-        cartDAO.save(cart);
-    }
+	/**
+	 * 為顧客建立新的購物車
+	 *
+	 * @param customerId 顧客 ID
+	 * @return 建立完成的購物車
+	 */
+	@Override
+	public Cart createCartForCustomer(Long customerId) {
+		// 取得 Customer，若找不到拋例外
+		Customer customer = customerDAO.findById(customerId);
 
-    @Override
-    public Cart createCartForUser(Long customerId) {
-        // 取得 Customer，若找不到拋例外
-        Customer customer = customerDAO.findById(customerId);
+		Cart cart = new Cart();
+		cart.setCustomer(customer);
 
-        Cart cart = new Cart();
-        cart.setCustomer(customer);
+		// 儲存 Cart
+		cartDAO.save(cart);
 
-        // 儲存 Cart
-        cartDAO.save(cart);
+		return cart;
+	}
 
-        return cart;
-    }
-    
-    @Override
-    public void clearCart(Long customerId) {
-        Cart cart = cartDAO.findByCustomerId(customerId).orElseThrow();
-        cart.getItems().clear();
-        cartDAO.save(cart);
-    }
-    @Override
-    public Cart getCartByCustomerId(Long customerId) {
-        Cart cart = cartDAO.findByCustomerId(customerId).orElseGet(() -> createCartForUser(customerId));
-        cart.getItems().size(); // 強制初始化 items list，避免 lazy load 問題
-        return cart;
-    }
+	/**
+	 * 清空購物車
+	 *
+	 * @param customerId 顧客 ID
+	 */
+	@Override
+	public void clearCart(Long customerId) {
+		Cart cart = cartDAO.findByCustomerId(customerId).orElseThrow();
+		cart.getItems().clear();
+		cartDAO.save(cart);
+	}
+
+	/**
+	 * 根據顧客 ID 取得購物車
+	 *
+	 * 若購物車不存在，會自動建立。 同時強制初始化 items list 避免 lazy load 問題。
+	 *
+	 * @param customerId 顧客 ID
+	 * @return 購物車物件
+	 */
+	@Override
+	public Cart getCartByCustomerId(Long customerId) {
+		Cart cart = cartDAO.findByCustomerId(customerId).orElseGet(() -> createCartForCustomer(customerId));
+		cart.getItems().size(); // 強制初始化 items list，避免 lazy load 問題
+		return cart;
+	}
 
 }

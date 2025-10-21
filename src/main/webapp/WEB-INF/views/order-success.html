@@ -7,13 +7,10 @@
 </head>
 <body>
 <div class="container mt-5 text-center">
-    <h1 th:text="恭喜, ' + ${customerName} + '!'"></h1>
+    <h1 th:text="|恭喜, ${customerName}!|"></h1>
 
     <a th:href="@{/products}" class="btn btn-primary mt-4">返回商品列表</a>
-
-    <form th:action="@{/logout}" method="get" class="mt-3">
-        <button type="submit" class="btn btn-secondary">Logout</button>
-    </form>
+	<a th:href="@{/orders}" class="btn btn-primary mt-4">查看所有訂單</a>
 </div>
 </body>
 </html>

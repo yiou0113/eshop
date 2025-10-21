@@ -18,7 +18,7 @@ public class PasswordResetToken {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(nullable = false)
+    @Column(name="expiry_date", nullable = false)
     private LocalDateTime expiryDate; // 設置過期時間
     //getter setter
 	public Long getId() {

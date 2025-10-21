@@ -51,7 +51,9 @@ public class OrderController {
         Customer customer = customerService.getCustomerByUserId(user.getId());
 
         try {
+        	String customerName = customer.getName();
             Order order = orderService.createOrder(customer.getId());
+            model.addAttribute("customerName", customerName);
             model.addAttribute("order", order);
             return "order-success"; // 成功頁面
         } catch (RuntimeException e) {

@@ -11,4 +11,5 @@ public interface CartDAO {
 
     void delete(Cart cart);
     
+    void deleteByCartIdAndProductId(Long cartId, Long productId);
 }
