@@ -22,15 +22,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class CustomerServiceImpl implements CustomerService {
-	/** 注入 UserDAO，用於操作使用者資料 */
 	@Autowired
 	private UserDAO userDAO;
 
-	/** 注入 CustomerDAO，用於操作顧客資料 */
 	@Autowired
 	private CustomerDAO customerDAO;
 
-	/** 注入 PasswordEncoder，用於密碼加密 */
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
@@ -68,7 +65,12 @@ public class CustomerServiceImpl implements CustomerService {
 		// 儲存（會自動保存關聯對象）
 		userDAO.save(user);
 	}
-
+	/**
+     * 根據使用者 ID 查詢對應的顧客資料
+     *
+     * @param userId 使用者唯一識別碼
+     * @return 對應的 {@link Customer} 物件；若找不到則回傳 {@code null}
+     */
 	public Customer getCustomerByUserId(Long userId) {
 		return customerDAO.findByUserId(userId);
 	}

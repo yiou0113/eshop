@@ -32,15 +32,12 @@ import com.example.demo.service.CartService;
 @Service
 @Transactional
 public class CartServiceImpl implements CartService {
-	/** 注入 CartDAO，用於操作購物車資料 */
 	@Autowired
 	private CartDAO cartDAO;
 
-	/** 注入 ProductDAO，用於操作商品資料 */
 	@Autowired
 	private ProductDAO productDAO;
 
-	/** 注入 UserDAO，用於操作顧客資料 */
 	@Autowired
 	private CustomerDAO customerDAO;
 

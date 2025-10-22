@@ -30,14 +30,15 @@ import com.example.demo.service.OrderService;
 @Service
 @Transactional
 public class OrderServiceImpl implements OrderService {
-	/** 記錄執行狀況與錯誤訊息的 Logger */
+
     private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
-	/** 注入訂單 DAO，用於存取訂單資料 */
+
 	@Autowired
 	private OrderDAO orderDAO;
-	/** 注入購物車 DAO，用於查詢與清空購物車資料 */
+
 	@Autowired
 	private CartDAO cartDAO;
+	
 	/**
      * 根據顧客 ID 建立新訂單。
      *

@@ -14,13 +14,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  */
 @Service
 public class AuthServiceImpl implements AuthService {
-	/** 注入 UserService，用於取得使用者資料 */
 	@Autowired
 	private UserService userService;
 	
-	/** 注入 PasswordEncoder，用於比對密碼 */
 	@Autowired
-	private PasswordEncoder passwordEncoder;
+	private PasswordEncoder passwordEncoder;// 用於密碼加密的工具類別
 	
 	/**
      * 使用電子郵件與密碼進行登入

@@ -24,7 +24,8 @@ public class Order {
 
     @Column(name="total_amount", precision = 10, scale = 2)
     private BigDecimal totalAmount;
-
+    
+    @Column(length = 20)
     private String status;
     
     @Column(name="created_at")

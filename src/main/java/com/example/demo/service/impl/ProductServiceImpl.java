@@ -25,7 +25,7 @@ import java.util.List;
 public class ProductServiceImpl implements ProductService {
 
 	@Autowired
-	private ProductDAO productDAO;// 負責與資料庫互動的 DAO 物件
+	private ProductDAO productDAO;
 
 	/**
 	 * 取得所有商品清單

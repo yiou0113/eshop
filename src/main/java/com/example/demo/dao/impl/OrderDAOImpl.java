@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 
 import com.example.demo.dao.OrderDAO;
 import com.example.demo.model.Order;
-import com.example.demo.model.User;
 
 /**
  * OrderDAO 的實作類別

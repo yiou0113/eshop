@@ -8,8 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 /**
  * UserService 的實作類別
  * 
@@ -30,7 +29,7 @@ public class UserServiceImpl implements UserService {
 
     
 	@Autowired
-	private UserDAO userDAO;// 負責與資料庫互動的 DAO 物件
+	private UserDAO userDAO;
 	@Autowired
 	private PasswordEncoder passwordEncoder; // 用於密碼加密的工具類別
 	/**

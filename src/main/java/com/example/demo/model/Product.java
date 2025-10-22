@@ -12,7 +12,7 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="name", nullable = false)
+    @Column(name="name", nullable = false, length = 150)
     private String name;
 
     @Column(name="description",length = 1000)
@@ -21,7 +21,7 @@ public class Product {
     @Column(name="price",nullable = false,precision = 10, scale = 2)
     private BigDecimal price;
 
-    @Column(name = "image_url")
+    @Column(name = "image_url", length = 500)
     private String imageUrl;
 
     // Getter / Setter
