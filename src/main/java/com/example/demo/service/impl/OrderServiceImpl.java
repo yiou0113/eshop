@@ -12,10 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.dao.CartDAO;
 import com.example.demo.dao.OrderDAO;
+import com.example.demo.dao.ProductDAO;
 import com.example.demo.model.Cart;
 import com.example.demo.model.CartItem;
 import com.example.demo.model.Order;
 import com.example.demo.model.OrderItem;
+import com.example.demo.model.Product;
 import com.example.demo.service.OrderService;
 /**
  * OrderService 的實作類別
@@ -39,6 +41,8 @@ public class OrderServiceImpl implements OrderService {
 	@Autowired
 	private CartDAO cartDAO;
 	
+	@Autowired
+	private ProductDAO productDAO;
 	/**
      * 根據顧客 ID 建立新訂單。
      *
@@ -71,6 +75,19 @@ public class OrderServiceImpl implements OrderService {
 
             // 將購物車項目轉為訂單項目
             for (CartItem cartItem : cart.getItems()) {
+            	 Product product = productDAO.findById(cartItem.getProduct().getId());
+                 if (product == null) {
+                     throw new RuntimeException("找不到商品 ID：" + cartItem.getProduct().getId());
+                 }
+
+                 // ✅ 比對購物車價格與目前商品價格
+                 if (cartItem.getPrice().compareTo(product.getPrice()) != 0) {
+                     logger.warn("商品 {} 價格有變動：購物車價格={}，目前價格={}",
+                             product.getName(), cartItem.getPrice(), product.getPrice());
+
+                     cartItem.setPrice(product.getPrice());
+                 }
+            	
                 OrderItem orderItem = new OrderItem();
                 orderItem.setOrder(order);
                 orderItem.setProduct(cartItem.getProduct());

@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 /**
  * 註冊相關的 Controller
@@ -53,11 +54,48 @@ public class RegisterController {
             @RequestParam String email,
             @RequestParam String password,
             @RequestParam String phone,
-            @RequestParam String address
-    ) {
-        // 呼叫 Service 執行註冊邏輯
-        customerService.registerCustomer(name, email, password, phone, address);
-        // 註冊完成後導向登入頁面
-        return "redirect:/login";
+            @RequestParam String address,
+            Model model) {
+
+        // --- Controller 層快速驗證 ---
+        if (name == null || name.isBlank()) {
+            model.addAttribute("errorMessage", "姓名不可為空");
+            return "register";
+        }
+        if (name.length() > 150) {
+            model.addAttribute("errorMessage", "姓名過長");
+            return "register";
+        }
+
+        if (phone != null && phone.length() > 20) {
+            model.addAttribute("errorMessage", "電話過長");
+            return "register";
+        }
+
+        if (address != null && address.length() > 255) {
+            model.addAttribute("errorMessage", "地址過長");
+            return "register";
+        }
+
+        if (email == null || email.isBlank()) {
+            model.addAttribute("errorMessage", "Email 不可為空");
+            return "register";
+        }
+
+        if (password == null || password.isBlank()) {
+            model.addAttribute("errorMessage", "密碼不可為空");
+            return "register";
+        }
+
+        // --- 呼叫 Service 層，做商業邏輯驗證 ---
+        try {
+            customerService.registerCustomer(name, email, password, phone, address);
+            return "redirect:/login";
+        } catch (IllegalArgumentException e) {
+            // Service 層驗證失敗時回傳訊息
+            model.addAttribute("errorMessage", e.getMessage());
+            return "register";
+        }
     }
+
 }

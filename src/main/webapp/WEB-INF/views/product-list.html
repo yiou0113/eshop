@@ -18,21 +18,37 @@
 </style>
 
 </head>
+
 <body>
+	<div class="container mt-3 d-flex justify-content-end">
+		<a th:href="@{/cart}" class="btn btn-warning"> 🛒 檢視購物車 </a>
+		<a th:href="@{/orders}" class="btn btn-info">📄 查看我的訂單</a>
+	</div>
 	<div class="container mt-5">
+		<div th:if="${message}" id="flashMessage" class="alert alert-success"
+			role="alert">
+			<span th:text="${message}"></span>
+		</div>
 		<h2 class="mb-4">Product List</h2>
 		<div class="row">
 			<div class="col-md-4 mb-4" th:each="product : ${products}">
 				<div class="card">
-					<img th:src="@{${product.imageUrl}}" class="card-img-top"
+					<a th:href="@{/products/{id}(id=${product.id})}"> <img
+						th:src="@{${product.imageUrl}}" class="card-img-top"
 						alt="Product Image">
+					</a>
 					<div class="card-body">
 						<h5 class="card-title" th:text="${product.name}"></h5>
 						<p class="card-text">
-							$<span th:text="${product.price}"></span>
+							<span
+								th:text="'NT$ ' + ${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')}"></span>
 						</p>
-						<a th:href="@{/products/{id}(id=${product.id})}"
-							class="btn btn-primary">View Details</a>
+						<form th:action="@{/cart/add}" method="post" class="d-inline mt-2">
+							<input type="hidden" name="productId" th:value="${product.id}">
+							<input type="hidden" name="quantity" value="1">
+							<button type="submit" class="btn btn-primary">加入購物車</button>
+						</form>
+
 					</div>
 				</div>
 			</div>
@@ -59,4 +75,16 @@
 		</nav>
 	</div>
 </body>
+<script>
+    // 取得 alert 元素
+    const flash = document.getElementById('flashMessage');
+    if (flash) {
+        // 3 秒後淡出
+        setTimeout(() => {
+            flash.style.transition = 'opacity 0.5s ease';
+            flash.style.opacity = '0';
+            setTimeout(() => flash.remove(), 500); // 0.5 秒後移除
+        }, 2500); // 顯示時間
+    }
+</script>
 </html>

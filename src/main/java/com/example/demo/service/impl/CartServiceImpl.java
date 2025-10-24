@@ -168,6 +168,7 @@ public class CartServiceImpl implements CartService {
 		Cart cart = cartDAO.findByCustomerId(customerId).orElseGet(() -> createCartForCustomer(customerId));
 		cart.getItems().size(); // 強制初始化 items list，避免 lazy load 問題
 		return cart;
+		
 	}
 
 }

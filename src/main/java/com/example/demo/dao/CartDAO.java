@@ -12,12 +12,8 @@ import com.example.demo.model.Cart;
  * - 刪除整個購物車
  * - 刪除購物車中指定商品
  */
-public interface CartDAO {
+public interface CartDAO extends BaseDAO<Cart> {
 	Optional<Cart> findByCustomerId(Long custId);
-
-    void save(Cart cart);
-
-    void delete(Cart cart);
-    
+  
     void deleteByCartIdAndProductId(Long cartId, Long productId);
 }

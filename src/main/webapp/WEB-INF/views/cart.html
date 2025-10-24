@@ -45,8 +45,14 @@
 	<h3>
 		總價: <span th:text="${total}">0</span>
 	</h3>
-	<form th:action="@{/orders/create}" method="post">
+	<form th:if="${!isEmpty}" th:action="@{/orders/create}" method="post">
 		<button type="submit">結帳並建立訂單</button>
+	</form>
+	<p th:if="${isEmpty}" class="text-muted">
+    購物車目前沒有商品，無法結帳。
+</p>
+	<form th:action="@{/products}" method="get">
+		<button type="submit">返回商品列表</button>
 	</form>
 </body>
 </html>

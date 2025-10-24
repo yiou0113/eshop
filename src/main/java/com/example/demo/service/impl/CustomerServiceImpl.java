@@ -45,26 +45,48 @@ public class CustomerServiceImpl implements CustomerService {
 	 */
 	@Override
 	public void registerCustomer(String name, String email, String password, String phone, String address) {
-		String encodedPassword = passwordEncoder.encode(password);
 
-		// 建立 User
-		User user = new User();
-		user.setEmail(email);
-		user.setPassword(encodedPassword);
-		// user.setRole("ROLE_USER");
+	    // --- 基本驗證 ---
+	    if (name == null || name.isBlank()) throw new IllegalArgumentException("姓名不可為空");
+	    if (name.length() > 150) throw new IllegalArgumentException("姓名過長");
 
-		// 建立 Customer
-		Customer customer = new Customer();
-		customer.setName(name);
-		customer.setPhone(phone);
-		customer.setAddress(address);
-		customer.setUser(user);
-		// 設定雙向關聯
-		user.setCustomer(customer);
+	    if (email == null || email.isBlank()) throw new IllegalArgumentException("Email 不可為空");
+	    if (!email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) throw new IllegalArgumentException("Email 格式不正確");
+	    
+	    // --- 唯一性檢查 ---
+	    if (userDAO.findByEmail(email) != null) {
+	        throw new IllegalArgumentException("Email 已存在");
+	    }
 
-		// 儲存（會自動保存關聯對象）
-		userDAO.save(user);
+	    if (password == null || password.isBlank()) throw new IllegalArgumentException("密碼不可為空");
+	    if (password.length() < 6) throw new IllegalArgumentException("密碼至少 6 個字元");
+
+	    if (phone != null && phone.length() > 20) throw new IllegalArgumentException("電話過長");
+	    if (address != null && address.length() > 255) throw new IllegalArgumentException("地址過長");
+
+	    // --- 密碼加密 ---
+	    String encodedPassword = passwordEncoder.encode(password);
+
+	    // --- 建立 User ---
+	    User user = new User();
+	    user.setEmail(email);
+	    user.setPassword(encodedPassword);
+	    // user.setRole("ROLE_USER");
+
+	    // --- 建立 Customer ---
+	    Customer customer = new Customer();
+	    customer.setName(name);
+	    customer.setPhone(phone);
+	    customer.setAddress(address);
+	    customer.setUser(user);
+
+	    // 設定雙向關聯
+	    user.setCustomer(customer);
+
+	    // --- 儲存 ---
+	    userDAO.save(user);
 	}
+
 	/**
      * 根據使用者 ID 查詢對應的顧客資料
      *

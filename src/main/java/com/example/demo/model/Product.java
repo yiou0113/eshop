@@ -23,6 +23,10 @@ public class Product {
 
     @Column(name = "image_url", length = 500)
     private String imageUrl;
+    
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
     // Getter / Setter
     public Long getId() { return id; }
@@ -40,15 +44,17 @@ public class Product {
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
     
+    public Category getCategory() { return category; }
+    public void setCategory(Category category) { this.category = category; }
+    
     @Override
     public String toString() {
         return "Product{" +
-               "id=" + id +
-               ", name='" + name + '\'' +
-               ", price=" + price +
-               ", description='" + description + '\'' +
-               ", image_url='" + imageUrl + '\'' +
-               '}';
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", category=" + (category != null ? category.getName() : "null") +
+                '}';
     }
 
 }

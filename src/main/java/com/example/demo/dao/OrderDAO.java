@@ -8,12 +8,7 @@ import com.example.demo.model.Order;
  *
  * 此介面負責與資料庫互動，提供訂單的儲存與查詢操作及依顧客查詢訂單的功能。
  */
-public interface OrderDAO {
-	void save(Order order);
-	
-	Order findById(Long id);
-	
-	List<Order> findAll();
-	
+public interface OrderDAO extends BaseDAO<Order> {
 	List<Order> findByCustomerId(Long customerId);
+	
 }

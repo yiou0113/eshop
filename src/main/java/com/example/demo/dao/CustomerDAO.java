@@ -6,11 +6,7 @@ import com.example.demo.model.Customer;
  *
  * 此介面負責與資料庫互動，提供顧客的儲存與查詢操作及依使用者查詢顧客的功能。
  */
-public interface CustomerDAO {
-	void save(Customer customer);
-	
-	Customer findById(Long id);
-	
+public interface CustomerDAO extends BaseDAO<Customer> {
     Customer findByUserId(Long userId);
 
 }

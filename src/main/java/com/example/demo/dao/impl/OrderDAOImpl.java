@@ -3,11 +3,8 @@ package com.example.demo.dao.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.example.demo.dao.OrderDAO;
@@ -25,53 +22,9 @@ import com.example.demo.model.Order;
  * - 根據顧客 ID 查詢該顧客的所有訂單
  */
 @Repository
-public class OrderDAOImpl implements OrderDAO {
+public class OrderDAOImpl extends BaseDAOImpl<Order> implements OrderDAO {
 	/** Logger，用於記錄執行過程與錯誤訊息 */
     private static final Logger logger = LoggerFactory.getLogger(OrderDAOImpl.class);
-    
-	/** Hibernate 的 SessionFactory，用於建立與資料庫互動的 Session。 */
-	@Autowired
-	private SessionFactory sessionFactory;
-	
-	/**
-	 * 取得目前的 Hibernate Session。
-	 *
-	 * @return 目前作用中的 Session，用於進行資料庫操作。
-	 */
-	private Session getSession() {
-		return sessionFactory.getCurrentSession();
-	}
-
-	/**
-	 * 儲存或更新訂單資料。
-	 *
-	 * 若該訂單在資料庫中已存在，則執行更新；否則新增新紀錄。
-	 *
-	 * @param order 要儲存或更新的訂單物件。
-	 */
-	public void save(Order order) {
-		getSession().saveOrUpdate(order);
-		logger.info("儲存或更新訂單 ID: {}", order.getId());
-	}
-
-	/**
-	 * 根據訂單 ID 查詢單一訂單。
-	 *
-	 * @param id 訂單的唯一識別碼。
-	 * @return Order 物件，若查無資料則回傳 null。
-	 */
-	public Order findById(Long id) {
-		return getSession().get(Order.class, id);
-	}
-
-	/**
-	 * 查詢所有訂單資料。
-	 *
-	 * @return List<Order> 所有訂單的列表。
-	 */
-	public List<Order> findAll() {
-		return getSession().createQuery("From Order", Order.class).list();
-	}
 
 	/**
 	 * 根據顧客 ID 查詢該顧客的所有訂單。
@@ -86,7 +39,7 @@ public class OrderDAOImpl implements OrderDAO {
 	@Override
 	public List<Order> findByCustomerId(Long customerId) {
 		try {
-			List<Order> orders = getSession()
+			List<Order> orders = getCurrentSession()
 					.createQuery("FROM Order o WHERE o.customer.id = :customerId", Order.class)
 					.setParameter("customerId", customerId).getResultList();
 			logger.info(" 用顧客ID: {},查詢到共 {} 筆",  customerId,orders.size());

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 /**
@@ -40,6 +41,7 @@ public class CartController {
 	@GetMapping
 	public String viewCart(HttpSession session, Model model) {
 		// 從 Session 取得目前登入的使用者
+		
 		User user = (User) session.getAttribute("loggedInUser");
 		if (user == null) {
 			return "redirect:/login"; 
@@ -54,6 +56,8 @@ public class CartController {
 		if (cart == null) {
 			cart = new Cart();
 		}
+		boolean isEmpty = cart.getItems() == null || cart.getItems().isEmpty();
+		model.addAttribute("isEmpty", isEmpty);
 		model.addAttribute("cart", cart);
 		model.addAttribute("total", cartService.getCartTotal(customer.getId()));
 		return "cart";
@@ -69,7 +73,7 @@ public class CartController {
      * @return          重新導向至商品列表頁（/products）
      */
 	@PostMapping("/add")
-	public String addToCart(@RequestParam Long productId, @RequestParam int quantity, HttpSession session) {
+	public String addToCart(@RequestParam Long productId, @RequestParam int quantity, HttpSession session,RedirectAttributes redirectAttributes) {
 		// 從 Session 取得目前登入的使用者
 		User user = (User) session.getAttribute("loggedInUser");
 		if (user == null)
@@ -80,6 +84,7 @@ public class CartController {
 			return "redirect:/login";
 		}
 		cartService.addToCart(customer.getId(), productId, quantity);
+		redirectAttributes.addFlashAttribute("message", "商品已加入購物車！");
 		return "redirect:/products";
 	}
 	/**

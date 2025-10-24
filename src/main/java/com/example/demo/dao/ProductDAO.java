@@ -8,14 +8,7 @@ import java.util.List;
  *
  * 此介面負責與資料庫互動，提供商品的 CRUD 操作及分頁查詢。
  */
-public interface ProductDAO {
-    List<Product> findAll();
-    
-    Product findById(Long id);
-    
-    void save(Product product);
-    
-    void delete(Long id);
-    
+public interface ProductDAO extends BaseDAO<Product> {    
     List<Product> findPaginated(int page, int size);
+    
 }

@@ -3,10 +3,8 @@ package com.example.demo.dao.impl;
 import java.util.Optional;
 
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.example.demo.dao.CartDAO;
@@ -24,22 +22,9 @@ import com.example.demo.model.Cart;
  * - 根據購物車 ID 與商品 ID 刪除特定商品
  */
 @Repository
-public class CartDAOImpl implements CartDAO {
+public class CartDAOImpl extends BaseDAOImpl<Cart> implements CartDAO {
 	/** Logger，用於紀錄操作資訊與錯誤訊息 */
 	private static final Logger logger = LoggerFactory.getLogger(CartDAOImpl.class);
-
-	/** Hibernate SessionFactory，用於取得資料庫 Session */
-	@Autowired
-	private SessionFactory sessionFactory;
-
-	/**
-	 * 取得目前 Hibernate Session
-	 *
-	 * @return 當前的 Session 物件
-	 */
-	private Session getCurrentSession() {
-		return sessionFactory.getCurrentSession();
-	}
 
 	/**
 	 * 根據顧客 ID 查詢購物車
@@ -62,25 +47,6 @@ public class CartDAOImpl implements CartDAO {
 		}
 	}
 
-	/**
-	 * 儲存或更新購物車資料
-	 *
-	 * @param cart 要儲存或更新的購物車物件
-	 */
-	@Override
-	public void save(Cart cart) {
-		getCurrentSession().saveOrUpdate(cart);
-	}
-
-	/**
-	 * 刪除購物車
-	 *
-	 * @param cart 要刪除的購物車物件
-	 */
-	@Override
-	public void delete(Cart cart) {
-		getCurrentSession().delete(cart);
-	}
 	/**
     * 根據購物車 ID 與商品 ID 刪除購物車中的特定商品
     *
