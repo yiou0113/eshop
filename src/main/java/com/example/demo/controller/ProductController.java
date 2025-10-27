@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.Category;
 import com.example.demo.model.Product;
+import com.example.demo.service.CategoryService;
 import com.example.demo.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,7 +29,8 @@ public class ProductController {
 
 	@Autowired
 	private ProductService productService;
-
+	@Autowired
+	private CategoryService categoryService;
 	/**
 	 * 顯示商品列表（支援分頁）
 	 *
@@ -38,15 +41,30 @@ public class ProductController {
 	 * @return 返回商品列表的模板名稱 "product-list" 對應 product-list.html
 	 */
 	@GetMapping
-	public String listProducts(@RequestParam(defaultValue = "1") int page, Model model) {
+	public String listProducts(@RequestParam(defaultValue = "1") int page,@RequestParam(required = false) Long categoryId, Model model) {
 		int pageSize = 12; // 每頁幾筆
-		List<Product> products = productService.getProductsByPage(page, pageSize);
-		int totalProducts = productService.getAllProducts().size();
-		int totalPages = (int) Math.ceil((double) totalProducts / pageSize);
+		int totalProducts;
+		List<Product> products;
 
-		model.addAttribute("products", products);
-		model.addAttribute("currentPage", page);
-		model.addAttribute("totalPages", totalPages);
+		 if (categoryId != null) {
+	            // 依選定分類查詢商品
+	            products = productService.getProductsByCategory(categoryId, page, pageSize);
+	            totalProducts = productService.countProductsByCategory(categoryId);
+	        } else {
+	            products = productService.getProductsByPage(page, pageSize);
+	            totalProducts = productService.getAllProducts().size();
+	        }
+
+	        int totalPages = (int) Math.ceil((double) totalProducts / pageSize);
+
+	        // 改用三層分類結構
+	        List<Category> categoryTree = categoryService.getThreeLevelCategories();
+
+	        model.addAttribute("products", products);
+	        model.addAttribute("currentPage", page);
+	        model.addAttribute("totalPages", totalPages);
+	        model.addAttribute("categoryTree", categoryTree);
+	        model.addAttribute("selectedCategoryId", categoryId);
 		return "product-list";
 	}
 
@@ -65,5 +83,6 @@ public class ProductController {
 		model.addAttribute("product", product);
 		return "product-detail";
 	}
+	
 
 }

@@ -1,59 +1,41 @@
 package com.example.demo.dao.impl;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.NoResultException;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.example.demo.dao.PasswordResetTokenDAO;
 import com.example.demo.model.PasswordResetToken;
 
 @Repository
-public class PasswordResetTokenDAOImpl implements PasswordResetTokenDAO {
+public class PasswordResetTokenDAOImpl extends BaseDAOImpl<PasswordResetToken> implements PasswordResetTokenDAO {
 
-	@Autowired
-	private SessionFactory sessionFactory;
-
-	private Session getCurrentSession() {
-		return sessionFactory.getCurrentSession();
+	@Override
+	public PasswordResetToken findByToken(String tokenHash) {
+	    try {
+	        return getCurrentSession()
+	                .createQuery("FROM PasswordResetToken t WHERE t.token = :tokenHash", PasswordResetToken.class)
+	                .setParameter("tokenHash", tokenHash)
+	                .getSingleResult();
+	    } catch (NoResultException e) {
+	        return null;
+	    }
 	}
 
 	@Override
-	public PasswordResetToken findByToken(String token) {
-		try {
-			return getCurrentSession()
-					.createQuery("FROM PasswordResetToken t WHERE t.token = :token", PasswordResetToken.class)
-					.setParameter("token", token).getSingleResult();
-		} catch (NoResultException e) {
-			return null; // 找不到就回傳 null
-		}
+	public void  deleteByUserId(Long id) {
+		 getCurrentSession()
+	        .createQuery("DELETE FROM PasswordResetToken t WHERE t.user.id = :userId")
+	        .setParameter("userId", id)
+	        .executeUpdate();
 	}
 
 	@Override
-	public void save(PasswordResetToken token) {
-		if (token.getId() == null) {
-			getCurrentSession().persist(token); // 新增
-		} else {
-			getCurrentSession().merge(token); // 更新
-		}
+	public void deleteByExpiryDateBefore(LocalDateTime now) {
+		getCurrentSession().createQuery("DELETE FROM PasswordResetToken t WHERE t.expiryDate < :now")
+				.setParameter("now", now).executeUpdate();
 	}
 
-	@Override
-	public void delete(PasswordResetToken token) {
-		Session session = getCurrentSession();
-		PasswordResetToken managedToken;
-
-		// 判斷 token 是否已在 session
-		if (session.contains(token)) {
-			managedToken = token;
-		} else {
-			managedToken = (PasswordResetToken) session.merge(token);
-		}
-
-		// 然後刪除
-		session.remove(managedToken);
-
-	}
 }

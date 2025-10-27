@@ -11,4 +11,9 @@ import java.util.List;
 public interface ProductDAO extends BaseDAO<Product> {    
     List<Product> findPaginated(int page, int size);
     
+    List<Product> findByCategoryId(Long categoryId);
+    
+    List<Product> findByCategoryId(Long categoryId, int page, int size);
+    
+    int countByCategoryId(Long categoryId);
 }

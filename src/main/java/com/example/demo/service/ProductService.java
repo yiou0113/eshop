@@ -19,5 +19,10 @@ public interface ProductService {
     void deleteProduct(Long id);
     
     List<Product> getProductsByPage(int page, int size);
-
+    
+    List<Product> getProductsByCategoryId(Long categoryId);
+    
+    List<Product> getProductsByCategory(Long categoryId, int page, int size);
+    
+    int countProductsByCategory(Long categoryId);
 }

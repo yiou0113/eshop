@@ -30,8 +30,10 @@ public class CustomerDAOImpl extends BaseDAOImpl<Customer> implements CustomerDA
 	@Override
 	public Customer findByUserId(Long userId) {
 		try {
-			return getCurrentSession().createQuery("FROM Customer c WHERE c.user.id = :userId", Customer.class)
-					.setParameter("userId", userId).uniqueResult(); // 找不到會回傳 null
+			return getCurrentSession()
+					.createQuery("FROM Customer c WHERE c.user.id = :userId", Customer.class)
+					.setParameter("userId", userId)
+					.uniqueResult(); // 找不到會回傳 null
 		} catch (Exception e) {
 			logger.error("查詢顧客時發生錯誤，User ID：{}，錯誤訊息：{}", userId, e.getMessage(), e);
 			return null; // 發生例外也回傳 null

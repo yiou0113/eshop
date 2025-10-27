@@ -2,10 +2,11 @@ package com.example.demo.dao;
 
 import com.example.demo.model.PasswordResetToken;
 
-public interface PasswordResetTokenDAO {
+public interface PasswordResetTokenDAO extends BaseDAO<PasswordResetToken> {
 	PasswordResetToken findByToken(String token);
 	
-	void save(PasswordResetToken token);
+	void deleteByUserId(Long id);
 	
-	void delete(PasswordResetToken token);
+	
+	void deleteByExpiryDateBefore(java.time.LocalDateTime now);
 }

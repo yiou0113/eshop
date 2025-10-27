@@ -29,4 +29,37 @@ public class ProductDAOImpl extends BaseDAOImpl<Product> implements ProductDAO {
 				.setMaxResults(size) // 每頁顯示多少筆
 				.list();
 	}
+	@Override
+	public List<Product> findByCategoryId(Long categoryId){
+		    return getCurrentSession()
+		            .createQuery("FROM Product p WHERE p.category.id = :categoryId", Product.class)
+		            .setParameter("categoryId", categoryId)
+		            .list();
+	}
+	@Override
+	public List<Product> findByCategoryId(Long categoryId, int page, int size) {
+	    if (categoryId == null) {
+	        return List.of();
+	    }
+	    return getCurrentSession()
+	            .createQuery("FROM Product p WHERE p.category.id = :id", Product.class)
+	            .setParameter("id", categoryId)
+	            .setFirstResult((page - 1) * size)
+	            .setMaxResults(size)
+	            .list();
+	}
+
+	@Override
+	public int countByCategoryId(Long categoryId) {
+	    if (categoryId == null) {
+	        return 0;
+	    }
+	    Long count = getCurrentSession()
+	            .createQuery("SELECT COUNT(p.id) FROM Product p WHERE p.category.id = :id", Long.class)
+	            .setParameter("id", categoryId)
+	            .uniqueResult();
+	    return count != null ? count.intValue() : 0;
+	}
+
+
 }

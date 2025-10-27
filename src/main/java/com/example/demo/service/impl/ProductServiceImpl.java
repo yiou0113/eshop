@@ -78,5 +78,27 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public List<Product> getProductsByPage(int page, int size) {
 		return productDAO.findPaginated(page, size);
-	}	
+	}
+	
+	@Override
+	public List<Product> getProductsByCategoryId(Long categoryId){
+		return productDAO.findByCategoryId(categoryId);
+	}
+	@Override
+	public List<Product> getProductsByCategory(Long categoryId, int page, int size) {
+	    if (categoryId == null) {
+	        return List.of();
+	    }
+	    return productDAO.findByCategoryId(categoryId, page, size);
+	}
+
+	@Override
+	public int countProductsByCategory(Long categoryId) {
+	    if (categoryId == null) {
+	        return 0;
+	    }
+	    return productDAO.countByCategoryId(categoryId);
+	}
+
+
 }
