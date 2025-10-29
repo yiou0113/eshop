@@ -2,6 +2,7 @@ package com.example.demo.service.impl;
 
 import com.example.demo.dao.ProductDAO;
 import com.example.demo.model.Product;
+import com.example.demo.service.CategoryService;
 import com.example.demo.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,8 @@ public class ProductServiceImpl implements ProductService {
 
 	@Autowired
 	private ProductDAO productDAO;
-
+	@Autowired
+	private CategoryService categoryService;
 	/**
 	 * 取得所有商品清單
 	 *
@@ -89,7 +91,8 @@ public class ProductServiceImpl implements ProductService {
 	    if (categoryId == null) {
 	        return List.of();
 	    }
-	    return productDAO.findByCategoryId(categoryId, page, size);
+	    List<Long> categoryIds = categoryService.getAllChildCategoryIds(categoryId);
+	    return productDAO.findByCategoryIds(categoryIds, page, size);
 	}
 
 	@Override
@@ -97,8 +100,15 @@ public class ProductServiceImpl implements ProductService {
 	    if (categoryId == null) {
 	        return 0;
 	    }
-	    return productDAO.countByCategoryId(categoryId);
+	    List<Long> categoryIds = categoryService.getAllChildCategoryIds(categoryId);
+	    return productDAO.countByCategoryIds(categoryIds);
+	}
+	
+	public List<Product> searchProductsByNameWithPage(String keyword, int page, int size) {
+	    return productDAO.searchProductsByName(keyword, page, size);
 	}
 
-
+	public int countProductsByName(String keyword) {
+	    return productDAO.countProductsByName(keyword);
+	}
 }

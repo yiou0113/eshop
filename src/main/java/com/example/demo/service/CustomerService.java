@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.model.Customer;
+import com.example.demo.model.User;
 /**
  * CustomerService 介面 — 定義顧客（Customer）相關的業務邏輯操作。
  *
@@ -10,4 +11,8 @@ public interface CustomerService {
     void registerCustomer(String name, String email, String password, String phone, String address);
     
     Customer getCustomerByUserId(Long userId);
+    
+    void updateCustomerPassword(Long id, User updatedUser,String oldPassword);
+    
+    void updateCustomerInfo(Long id, Customer updatedCustomer);
 }

@@ -21,36 +21,48 @@
 
 <body>
 	<div class="container mt-3 d-flex justify-content-end">
-		<a th:href="@{/cart}" class="btn btn-warning"> 🛒 檢視購物車 </a> <a
-			th:href="@{/orders}" class="btn btn-info">📄 查看我的訂單</a>
+		<a th:href="@{/user/account/profile}" class="btn btn-primary">
+			🧍🏻 我的帳戶 </a> <a th:href="@{/cart}" class="btn btn-success"> 🛒
+			檢視購物車 </a> <a th:href="@{/orders}" class="btn btn-info">📄 查看我的訂單</a>
 	</div>
 	<div class="container mt-5">
 		<div th:if="${message}" id="flashMessage" class="alert alert-success"
 			role="alert">
 			<span th:text="${message}"></span>
 		</div>
-		<div class="container mt-5">
+		<form th:action="@{/products/search}" method="get" class="mb-3">
+			<input type="text" name="keyword" th:value="${keyword}"
+				placeholder="搜尋商品名稱" />
+			<button type="submit">搜尋</button>
+		</form>
+		<div class="container mt-5"></div>
+		<form method="get" th:action="@{/products}">
+			<select id="categorySelect" name="categoryId" class="form-select"
+				onchange="this.form.submit()">
+				<option value="" th:selected="${selectedCategoryId == null}">全部商品</option>
 
-  <form method="get" th:action="@{/products}">
-    <select id="categorySelect" name="categoryId" class="form-select" onchange="this.form.submit()">
-        <option value="" th:selected="${selectedCategoryId == null}">全部商品</option>
+				<!-- 大分類 -->
+				<th:block th:each="top : ${categoryTree}">
+					<option th:value="${top.id}"
+						th:selected="${selectedCategoryId == top.id}"
+						th:text="${top.name}"></option>
 
-        <!-- 大分類 -->
-        <th:block th:each="top : ${categoryTree}">
-            <option th:value="${top.id}" th:selected="${selectedCategoryId == top.id}" th:text="${top.name}"></option>
+					<!-- 中分類 -->
+					<th:block th:each="mid : ${top.children}">
+						<option th:value="${mid.id}"
+							th:selected="${selectedCategoryId == mid.id}"
+							th:text="'-- ' + ${mid.name}"></option>
 
-            <!-- 中分類 -->
-            <th:block th:each="mid : ${top.children}">
-                <option th:value="${mid.id}" th:selected="${selectedCategoryId == mid.id}" th:text="'-- ' + ${mid.name}"></option>
-
-                <!-- 小分類 -->
-                <th:block th:each="small : ${mid.children}">
-                    <option th:value="${small.id}" th:selected="${selectedCategoryId == small.id}" th:text="'---- ' + ${small.name}"></option>
-                </th:block>
-            </th:block>
-        </th:block>
-    </select>
-</form>
+						<!-- 小分類 -->
+						<th:block th:each="small : ${mid.children}">
+							<option th:value="${small.id}"
+								th:selected="${selectedCategoryId == small.id}"
+								th:text="'---- ' + ${small.name}"></option>
+						</th:block>
+					</th:block>
+				</th:block>
+			</select>
+		</form>
 
 
 

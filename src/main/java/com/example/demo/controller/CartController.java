@@ -29,7 +29,7 @@ public class CartController {
 	private CartService cartService;
 	@Autowired
 	private CustomerService customerSecvice;
-
+	
 	/**
      * 顯示目前使用者的購物車內容。
      * 若使用者未登入，則會導向登入頁面。
@@ -43,9 +43,6 @@ public class CartController {
 		// 從 Session 取得目前登入的使用者
 		
 		User user = (User) session.getAttribute("loggedInUser");
-		if (user == null) {
-			return "redirect:/login"; 
-		}
 		// 根據使用者 ID 查找對應的顧客資料
 		Customer customer = customerSecvice.getCustomerByUserId(user.getId());
 		if (customer == null) {
@@ -56,8 +53,7 @@ public class CartController {
 		if (cart == null) {
 			cart = new Cart();
 		}
-		boolean isEmpty = cart.getItems() == null || cart.getItems().isEmpty();
-		model.addAttribute("isEmpty", isEmpty);
+		model.addAttribute("isEmpty", cartService.isCartEmpty(customer.getId()));
 		model.addAttribute("cart", cart);
 		model.addAttribute("total", cartService.getCartTotal(customer.getId()));
 		return "cart";
@@ -76,8 +72,6 @@ public class CartController {
 	public String addToCart(@RequestParam Long productId, @RequestParam int quantity, HttpSession session,RedirectAttributes redirectAttributes) {
 		// 從 Session 取得目前登入的使用者
 		User user = (User) session.getAttribute("loggedInUser");
-		if (user == null)
-			return "redirect:/login";
 		// 根據使用者 ID 查找對應的顧客資料
 		Customer customer = customerSecvice.getCustomerByUserId(user.getId());
 		if (customer == null) {
@@ -102,8 +96,6 @@ public class CartController {
 			HttpSession session) {
 		// 從 Session 取得目前登入的使用者
 		User user = (User) session.getAttribute("loggedInUser");
-		if (user == null)
-			return "redirect:/login";
 		// 根據使用者 ID 查找對應的顧客資料
 		Customer customer = customerSecvice.getCustomerByUserId(user.getId());
 		if (customer == null) {
@@ -125,8 +117,6 @@ public class CartController {
 	public String removeItem(@RequestParam("productId") Long productId, HttpSession session) {
 		// 從 Session 取得目前登入的使用者
 		User user = (User) session.getAttribute("loggedInUser");
-		if (user == null)
-			return "redirect:/login";
 		// 根據使用者 ID 查找對應的顧客資料
 		Customer customer = customerSecvice.getCustomerByUserId(user.getId());
 		if (customer == null) {

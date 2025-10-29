@@ -29,5 +29,6 @@ public interface CartService {
     void clearCart(Long customerId);
     
     Cart getCartByCustomerId(Long customerId);
-
+    
+    boolean isCartEmpty(Long customerId);
 }

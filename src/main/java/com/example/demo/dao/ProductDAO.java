@@ -13,7 +13,11 @@ public interface ProductDAO extends BaseDAO<Product> {
     
     List<Product> findByCategoryId(Long categoryId);
     
-    List<Product> findByCategoryId(Long categoryId, int page, int size);
+    List<Product> findByCategoryIds(List<Long> categoryId, int page, int size);
     
-    int countByCategoryId(Long categoryId);
+    int countByCategoryIds(List<Long> categoryId);
+    
+    List<Product> searchProductsByName(String keyword, int page, int size);
+    
+    int countProductsByName(String keyword);
 }

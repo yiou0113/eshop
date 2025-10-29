@@ -2,6 +2,7 @@ package com.example.demo.config;
 
 import java.util.Locale;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +25,9 @@ import org.thymeleaf.templatemode.TemplateMode;
 @EnableWebMvc
 @ComponentScan(basePackages = "com.example.demo") 
 public class WebMvcConfig implements WebMvcConfigurer {
-
+	@Autowired
+    private AuthInterceptor authInterceptor;
+	
     @Bean
     public SpringResourceTemplateResolver templateResolver() {
         SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
@@ -91,7 +94,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
+        registry.addInterceptor(authInterceptor)
+        .addPathPatterns("/**")       // 所有路徑都攔截
+        .excludePathPatterns("/login", "/css/**", "/js/**","/products/**","/","/password/**","/logout","/users/**"); // 排除不需登入的路徑
     }
-
+    
     
 }

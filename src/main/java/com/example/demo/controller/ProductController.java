@@ -19,9 +19,7 @@ import java.util.List;
  *
  * 此控制器負責處理商品列表與商品詳細資訊的展示。 所有對應的 URL 都以 "/products" 開頭。
  *
- * 功能包含： 
- * - 商品列表（分頁顯示） 
- * - 商品詳細頁面
+ * 功能包含： - 商品列表（分頁顯示） - 商品詳細頁面
  */
 @Controller
 @RequestMapping("/products")
@@ -31,6 +29,7 @@ public class ProductController {
 	private ProductService productService;
 	@Autowired
 	private CategoryService categoryService;
+
 	/**
 	 * 顯示商品列表（支援分頁）
 	 *
@@ -41,30 +40,34 @@ public class ProductController {
 	 * @return 返回商品列表的模板名稱 "product-list" 對應 product-list.html
 	 */
 	@GetMapping
-	public String listProducts(@RequestParam(defaultValue = "1") int page,@RequestParam(required = false) Long categoryId, Model model) {
+	public String listProducts(@RequestParam(defaultValue = "1") int page,
+			@RequestParam(required = false) Long categoryId, Model model) {
 		int pageSize = 12; // 每頁幾筆
 		int totalProducts;
 		List<Product> products;
+		
+		if (categoryId != null) {
+			// 依選定分類查詢商品
+			products = productService.getProductsByCategory(categoryId, page, pageSize);
+			totalProducts = productService.countProductsByCategory(categoryId);
+		} else {
+			products = productService.getProductsByPage(page, pageSize);
+			totalProducts = productService.getAllProducts().size();
+		}
 
-		 if (categoryId != null) {
-	            // 依選定分類查詢商品
-	            products = productService.getProductsByCategory(categoryId, page, pageSize);
-	            totalProducts = productService.countProductsByCategory(categoryId);
-	        } else {
-	            products = productService.getProductsByPage(page, pageSize);
-	            totalProducts = productService.getAllProducts().size();
-	        }
+		int totalPages = (int) Math.ceil((double) totalProducts / pageSize);
+	    if (totalPages == 0) {
+	        totalPages = 1;
+	    }
 
-	        int totalPages = (int) Math.ceil((double) totalProducts / pageSize);
+		// 改用三層分類結構
+		List<Category> categoryTree = categoryService.getThreeLevelCategories();
 
-	        // 改用三層分類結構
-	        List<Category> categoryTree = categoryService.getThreeLevelCategories();
-
-	        model.addAttribute("products", products);
-	        model.addAttribute("currentPage", page);
-	        model.addAttribute("totalPages", totalPages);
-	        model.addAttribute("categoryTree", categoryTree);
-	        model.addAttribute("selectedCategoryId", categoryId);
+		model.addAttribute("products", products);
+		model.addAttribute("currentPage", page);
+		model.addAttribute("totalPages", totalPages);
+		model.addAttribute("categoryTree", categoryTree);
+		model.addAttribute("selectedCategoryId", categoryId);
 		return "product-list";
 	}
 
@@ -83,6 +86,33 @@ public class ProductController {
 		model.addAttribute("product", product);
 		return "product-detail";
 	}
-	
 
+	@GetMapping("/search")
+	public String searchProducts(@RequestParam(value = "keyword", required = false) String keyword,
+	        @RequestParam(defaultValue = "1") int page, Model model) {
+		 int pageSize = 12;
+		List<Product> products;
+		int totalProducts;
+		if (keyword == null || keyword.trim().isEmpty()) {
+	        // 沒輸入關鍵字 → 顯示全部商品
+	        products = productService.getProductsByPage(page, pageSize);
+	        totalProducts = productService.getAllProducts().size();
+	    } else {
+	        // 搜尋商品名稱
+	        products = productService.searchProductsByNameWithPage(keyword, page, pageSize);
+	        totalProducts = productService.countProductsByName(keyword);
+	        if (products.isEmpty()) {
+	            model.addAttribute("message", "無搜尋結果");
+	        }
+	    }
+
+	    int totalPages = (int) Math.ceil((double) totalProducts / pageSize);
+	    if (totalPages == 0) totalPages = 1;
+	    
+	    model.addAttribute("products", products);
+	    model.addAttribute("keyword", keyword);
+	    model.addAttribute("currentPage", page);
+	    model.addAttribute("totalPages", totalPages);
+		return "product-list"; // 導回商品列表頁面
+	}
 }

@@ -37,29 +37,52 @@ public class ProductDAOImpl extends BaseDAOImpl<Product> implements ProductDAO {
 		            .list();
 	}
 	@Override
-	public List<Product> findByCategoryId(Long categoryId, int page, int size) {
-	    if (categoryId == null) {
+	public List<Product> findByCategoryIds(List<Long> categoryIds, int page, int size) {
+	    if (categoryIds == null) {
 	        return List.of();
 	    }
 	    return getCurrentSession()
-	            .createQuery("FROM Product p WHERE p.category.id = :id", Product.class)
-	            .setParameter("id", categoryId)
+	            .createQuery("FROM Product p WHERE p.category.id IN :ids", Product.class)
+	            .setParameter("ids", categoryIds)
 	            .setFirstResult((page - 1) * size)
 	            .setMaxResults(size)
 	            .list();
 	}
 
 	@Override
-	public int countByCategoryId(Long categoryId) {
-	    if (categoryId == null) {
+	public int countByCategoryIds(List<Long> categoryIds) {
+	    if (categoryIds == null) {
 	        return 0;
 	    }
 	    Long count = getCurrentSession()
-	            .createQuery("SELECT COUNT(p.id) FROM Product p WHERE p.category.id = :id", Long.class)
-	            .setParameter("id", categoryId)
+	            .createQuery("SELECT COUNT(p.id) FROM Product p WHERE p.category.id IN :ids", Long.class)
+	            .setParameter("ids", categoryIds)
 	            .uniqueResult();
 	    return count != null ? count.intValue() : 0;
 	}
+	
+	@Override
+	public List<Product> searchProductsByName(String keyword, int page, int size){
+		if (keyword == null || keyword.trim().isEmpty()) {
+            return getCurrentSession()
+            		.createQuery("FROM Product", Product.class)
+                    .getResultList();
+        }
 
+        return getCurrentSession()
+        		.createQuery("FROM Product p WHERE LOWER(p.name) LIKE :keyword", Product.class)
+                .setParameter("keyword", "%" + keyword.toLowerCase() + "%")
+                .setFirstResult((page - 1) * size)
+	            .setMaxResults(size)
+                .getResultList();
+    }
+	@Override
+	public int countProductsByName(String keyword) {
+	    Long count = getCurrentSession()
+	            .createQuery("SELECT COUNT(p.id) FROM Product p WHERE LOWER(p.name) LIKE LOWER(:keyword)", Long.class)
+	            .setParameter("keyword", "%" + keyword + "%")
+	            .uniqueResult();
+	    return count != null ? count.intValue() : 0;
+	}
 
 }

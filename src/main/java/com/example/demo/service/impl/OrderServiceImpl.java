@@ -172,5 +172,18 @@ public class OrderServiceImpl implements OrderService {
         logger.info("查詢到顧客 ID {} 的訂單，共 {} 筆。", customerId, orders.size());
         return orders;
 	}
+	@Override
+	public void cancelOrder(Long orderId) {
+	    Order order = getOrderById(orderId);
+	    
+	        order.setStatus("訂單取消");
+	        orderDAO.save(order); // 或使用 Hibernate session.update(order)
+	}
+	@Override
+	public void payOrder(Long orderId) {
+	    Order order = getOrderById(orderId);
+	    order.setStatus("付款完畢");
+	    orderDAO.save(order); // 或 session.update(order)
+	}
 
 }

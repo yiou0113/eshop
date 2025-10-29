@@ -96,4 +96,31 @@ public class CustomerServiceImpl implements CustomerService {
 	public Customer getCustomerByUserId(Long userId) {
 		return customerDAO.findByUserId(userId);
 	}
+	
+	@Override
+	public void updateCustomerPassword(Long id, User updatedUser,String oldPassword) {
+		User existingUser = userDAO.findById(id);
+		if (existingUser == null) return;
+		
+		if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+	        if (passwordEncoder.matches(oldPassword, existingUser.getPassword())) {
+	            String encodedPassword = passwordEncoder.encode(updatedUser.getPassword());
+	            existingUser.setPassword(encodedPassword);
+	        } else {
+	            throw new RuntimeException("舊密碼不正確");
+	        }
+	    }
+			// 儲存更新後的資料	
+			userDAO.save(existingUser);		
+	}
+	@Override
+	public void updateCustomerInfo(Long id, Customer updatedCustomer) {
+		User existingUser = userDAO.findById(id);
+		if (existingUser == null) throw new RuntimeException("使用者不存在");		
+		Customer existingCustomer = customerDAO.findByUserId(id);
+		existingCustomer.setName(updatedCustomer.getName());
+		existingCustomer.setPhone(updatedCustomer.getPhone());
+		existingCustomer.setAddress(updatedCustomer.getAddress());
+		customerDAO.save(existingCustomer);
+	}
 }

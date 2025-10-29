@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
+
+
 /**
  * 訂單相關的 Controller
  *
@@ -51,9 +53,6 @@ public class OrderController {
     @GetMapping
     public String viewOrders(HttpSession session, Model model) {
     	User user = (User) session.getAttribute("loggedInUser");
-        if (user == null) {
-            return "redirect:/login";
-        }
         Customer customer = customerService.getCustomerByUserId(user.getId());
         List<Order> orders = orderService.getOrderByCustomerId(customer.getId());
         if (orders.isEmpty()) {
@@ -80,11 +79,7 @@ public class OrderController {
     @PostMapping("/create")
     public String createOrder(HttpSession session, Model model) {
     	User user = (User) session.getAttribute("loggedInUser");
-        if (user == null) {
-            return "redirect:/login";
-        }
         Customer customer = customerService.getCustomerByUserId(user.getId());
-
         try {
         	String customerName = customer.getName();
             Order order = orderService.createOrder(customer.getId());
@@ -96,7 +91,7 @@ public class OrderController {
             return "cart"; // 回到購物車頁面顯示錯誤
         }
     }
-
+    
     /**
      * 查看單一訂單詳細資訊
      *
@@ -114,11 +109,7 @@ public class OrderController {
     @GetMapping("/{id}")
     public String viewOrderDetail(@PathVariable("id") Long id, HttpSession session, Model model) {
     	User user = (User) session.getAttribute("loggedInUser");
-        if (user == null) {
-            return "redirect:/login";
-        }
         Customer customer = customerService.getCustomerByUserId(user.getId());
-
         Order order = orderService.getOrderById(id);
         if (order == null || !order.getCustomer().getId().equals(customer.getId())) {
             return "redirect:/orders";
@@ -126,5 +117,37 @@ public class OrderController {
 
         model.addAttribute("order", order);
         return "order-detail";
+    }
+    
+    @PostMapping("/{id}/pay")
+    public String payOrder(@PathVariable("id") Long id, HttpSession session, Model model) {
+        User user = (User) session.getAttribute("loggedInUser");
+        Customer customer = customerService.getCustomerByUserId(user.getId());
+        Order order = orderService.getOrderById(id);
+
+        if (order == null || !order.getCustomer().getId().equals(customer.getId())) {
+            return "redirect:/orders";
+        }
+
+        // 模擬付款成功
+        orderService.payOrder(order.getId());
+
+        model.addAttribute("order", order);
+        model.addAttribute("message", "付款成功！");
+        return "redirect:/orders";
+    }
+    @PostMapping("/{id}/cancel")
+    public String cancelOrder(@PathVariable("id") Long id, HttpSession session, Model model) {
+        User user = (User) session.getAttribute("loggedInUser");
+        Customer customer = customerService.getCustomerByUserId(user.getId());
+        Order order = orderService.getOrderById(id);
+
+        if (order == null || !order.getCustomer().getId().equals(customer.getId())) {
+            return "redirect:/orders";
+        }
+
+        orderService.cancelOrder(order.getId());
+        model.addAttribute("message", "訂單已取消");
+        return "redirect:/orders";
     }
 }

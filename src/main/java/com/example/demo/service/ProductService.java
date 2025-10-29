@@ -25,4 +25,8 @@ public interface ProductService {
     List<Product> getProductsByCategory(Long categoryId, int page, int size);
     
     int countProductsByCategory(Long categoryId);
+    
+    List<Product> searchProductsByNameWithPage(String keyword, int page, int size);
+    
+    int countProductsByName(String keyword);
 }

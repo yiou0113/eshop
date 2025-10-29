@@ -170,5 +170,9 @@ public class CartServiceImpl implements CartService {
 		return cart;
 		
 	}
-
+	@Override
+	public boolean isCartEmpty(Long customerId) {
+	    Cart cart = getCartByCustomerId(customerId);
+	    return cart == null || cart.getItems() == null || cart.getItems().isEmpty();
+	}
 }

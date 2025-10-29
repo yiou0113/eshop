@@ -1,5 +1,6 @@
 package com.example.demo.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,22 @@ public class CategoryServiceImpl implements CategoryService {
             }
         }
         return topCategories;
+    }
+    
+    @Override
+    public List<Long> getAllChildCategoryIds(Long categoryId) {
+        List<Long> result = new ArrayList<>();
+        result.add(categoryId); // 包含自己
+        fetchChildren(categoryId, result);
+        return result;
+    }
+
+    private void fetchChildren(Long parentId, List<Long> result) {
+        List<Category> children = categoryDAO.findByParentId(parentId);
+        for (Category child : children) {
+            result.add(child.getId());
+            fetchChildren(child.getId(), result); // 遞迴找子孫
+        }
     }
 
 }

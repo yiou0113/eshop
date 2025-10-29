@@ -49,16 +49,6 @@ public class LoginController {
 			return "redirect:/login";
 		}
 	}
-/*
-	@GetMapping("/welcome")
-	public String showWelcome(HttpSession session, Model model) {
-		User user = (User) session.getAttribute("loggedInUser");
-		if (user != null) {
-			model.addAttribute("userEmail", user.getEmail());
-			return "welcome"; // 導向 welcome.html
-		}
-		return "redirect:/login"; // 未登入回 login
-	}*/
 	
 	/**
      * 處理登出請求
