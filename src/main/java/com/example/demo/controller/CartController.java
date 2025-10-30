@@ -77,6 +77,11 @@ public class CartController {
 		if (customer == null) {
 			return "redirect:/login";
 		}
+	    boolean success = cartService.addToCart(productId, quantity);
+	    if (!success) {
+	        redirectAttributes.addFlashAttribute("error", "購買數量不能超過庫存！");
+	        return "redirect:/products";
+	    }
 		cartService.addToCart(customer.getId(), productId, quantity);
 		redirectAttributes.addFlashAttribute("message", "商品已加入購物車！");
 		return "redirect:/products";
@@ -93,7 +98,7 @@ public class CartController {
 	// 更新商品數量
 	@PostMapping("/update")
 	public String updateQuantity(@RequestParam("productId") Long productId, @RequestParam("quantity") int quantity,
-			HttpSession session) {
+			HttpSession session,RedirectAttributes redirectAttributes) {
 		// 從 Session 取得目前登入的使用者
 		User user = (User) session.getAttribute("loggedInUser");
 		// 根據使用者 ID 查找對應的顧客資料
@@ -101,6 +106,11 @@ public class CartController {
 		if (customer == null) {
 			return "redirect:/login";
 		}
+		boolean success = cartService.addToCart(productId, quantity);
+	    if (!success) {
+	        redirectAttributes.addFlashAttribute("error", "購買數量不能超過庫存！");
+	        return "redirect:/cart?userId=" + customer.getId();
+	    }
 		cartService.updateQuantity(customer.getId(), productId, quantity);
 		return "redirect:/cart?userId=" + customer.getId();
 	}

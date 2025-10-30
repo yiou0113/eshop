@@ -27,7 +27,6 @@ import com.example.demo.service.CartService;
  * - 清空購物車 
  * - 根據顧客 ID
  * - 取得購物車
- * 使用 @Transactional 確保資料庫操作具有事務一致性。
  */
 @Service
 @Transactional
@@ -175,4 +174,14 @@ public class CartServiceImpl implements CartService {
 	    Cart cart = getCartByCustomerId(customerId);
 	    return cart == null || cart.getItems() == null || cart.getItems().isEmpty();
 	}
+	@Override
+	public boolean addToCart(Long productId, int quantity) {
+	    Product product = productDAO.findById(productId);
+	    if (product == null || quantity > product.getStock()) {
+	        return false; // 超過庫存或商品不存在
+	    }
+
+	    return true;
+	}
+
 }

@@ -31,4 +31,6 @@ public interface CartService {
     Cart getCartByCustomerId(Long customerId);
     
     boolean isCartEmpty(Long customerId);
+    
+    boolean addToCart(Long productId, int quantity);
 }

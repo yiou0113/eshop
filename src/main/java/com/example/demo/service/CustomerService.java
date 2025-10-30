@@ -12,7 +12,9 @@ public interface CustomerService {
     
     Customer getCustomerByUserId(Long userId);
     
-    void updateCustomerPassword(Long id, User updatedUser,String oldPassword);
+    void updateCustomerPassword(Long id, String newPassword);
     
     void updateCustomerInfo(Long id, Customer updatedCustomer);
+    
+    boolean checkPassword(Long id,String oldPassword);
 }

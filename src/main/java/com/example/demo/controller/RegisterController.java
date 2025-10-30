@@ -1,9 +1,14 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.RegisterDTO;
 import com.example.demo.service.CustomerService;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 /**
  * 註冊相關的 Controller
@@ -30,7 +35,8 @@ public class RegisterController {
      * @return 返回註冊頁面的檔名（Thymeleaf 模板）
      */
     @GetMapping("/register")
-    public String showRegisterForm() {
+    public String showRegisterForm(Model model) {
+    	model.addAttribute("form", new RegisterDTO());
         return "register";
     }
     /**
@@ -50,49 +56,25 @@ public class RegisterController {
      */
     @PostMapping("/register")
     public String register(
-            @RequestParam String name,
-            @RequestParam String email,
-            @RequestParam String password,
-            @RequestParam String phone,
-            @RequestParam String address,
+    		@Valid @ModelAttribute("form") RegisterDTO form,
+            BindingResult bindingResult,
             Model model) {
 
-        // --- Controller 層快速驗證 ---
-        if (name == null || name.isBlank()) {
-            model.addAttribute("errorMessage", "姓名不可為空");
-            return "register";
-        }
-        if (name.length() > 150) {
-            model.addAttribute("errorMessage", "姓名過長");
+    	// 若驗證失敗，回傳註冊頁並顯示錯誤訊息
+        if (bindingResult.hasErrors()) {
             return "register";
         }
 
-        if (phone != null && phone.length() > 20) {
-            model.addAttribute("errorMessage", "電話過長");
-            return "register";
-        }
-
-        if (address != null && address.length() > 255) {
-            model.addAttribute("errorMessage", "地址過長");
-            return "register";
-        }
-
-        if (email == null || email.isBlank()) {
-            model.addAttribute("errorMessage", "Email 不可為空");
-            return "register";
-        }
-
-        if (password == null || password.isBlank()) {
-            model.addAttribute("errorMessage", "密碼不可為空");
-            return "register";
-        }
-
-        // --- 呼叫 Service 層，做商業邏輯驗證 ---
         try {
-            customerService.registerCustomer(name, email, password, phone, address);
+            customerService.registerCustomer(
+                form.getName(),
+                form.getEmail(),
+                form.getPassword(),
+                form.getPhone(),
+                form.getAddress()
+            );
             return "redirect:/login";
         } catch (IllegalArgumentException e) {
-            // Service 層驗證失敗時回傳訊息
             model.addAttribute("errorMessage", e.getMessage());
             return "register";
         }

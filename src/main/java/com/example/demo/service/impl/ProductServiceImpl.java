@@ -82,10 +82,7 @@ public class ProductServiceImpl implements ProductService {
 		return productDAO.findPaginated(page, size);
 	}
 	
-	@Override
-	public List<Product> getProductsByCategoryId(Long categoryId){
-		return productDAO.findByCategoryId(categoryId);
-	}
+
 	@Override
 	public List<Product> getProductsByCategory(Long categoryId, int page, int size) {
 	    if (categoryId == null) {

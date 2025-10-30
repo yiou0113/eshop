@@ -27,14 +27,15 @@
 				<td><a th:href="@{/orders/{id}(id=${order.id})}">查看</a></td>
 				<td>
 					<!-- 付款按鈕 -->
-					<form th:action="@{/orders/{id}/pay(id=${order.id})}" method="post"
+					<form th:if="${order.status == '待付款'}"
+						th:action="@{/orders/{id}/pay(id=${order.id})}" method="post"
 						style="display: inline">
-						<button type="submit">付款</button>
-					</form>	
-					<!-- 取消訂單按鈕 -->
-					<form th:action="@{/orders/{id}/cancel(id=${order.id})}"
-						method="post" style="display: inline">
-						<button type="submit">取消訂單</button>
+						<button type="submit" class="btn btn-success">付款</button>
+					</form> <!-- 取消訂單按鈕 -->
+					<form th:if="${order.status == '待付款'}"
+						th:action="@{/orders/{id}/cancel(id=${order.id})}" method="post"
+						style="display: inline">
+						<button type="submit" class="btn btn-danger">取消訂單</button>
 					</form>
 				</td>
 			</tr>

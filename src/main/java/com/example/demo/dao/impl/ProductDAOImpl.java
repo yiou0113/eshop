@@ -30,13 +30,6 @@ public class ProductDAOImpl extends BaseDAOImpl<Product> implements ProductDAO {
 				.list();
 	}
 	@Override
-	public List<Product> findByCategoryId(Long categoryId){
-		    return getCurrentSession()
-		            .createQuery("FROM Product p WHERE p.category.id = :categoryId", Product.class)
-		            .setParameter("categoryId", categoryId)
-		            .list();
-	}
-	@Override
 	public List<Product> findByCategoryIds(List<Long> categoryIds, int page, int size) {
 	    if (categoryIds == null) {
 	        return List.of();
@@ -84,5 +77,16 @@ public class ProductDAOImpl extends BaseDAOImpl<Product> implements ProductDAO {
 	            .uniqueResult();
 	    return count != null ? count.intValue() : 0;
 	}
+	@Override
+	public boolean reduceStock(Long productId, int quantity) {
+	    String hql = "UPDATE Product p SET p.stock = p.stock - :qty " +
+	                 "WHERE p.id = :id AND p.stock >= :qty";
+	    int updated = getCurrentSession()
+	                  .createQuery(hql)
+	                  .setParameter("qty", quantity)
+	                  .setParameter("id", productId)
+	                  .executeUpdate();
 
+	    return updated > 0; // >0 表示扣成功
+	}
 }

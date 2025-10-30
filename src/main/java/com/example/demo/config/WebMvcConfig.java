@@ -96,7 +96,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(localeChangeInterceptor());
         registry.addInterceptor(authInterceptor)
         .addPathPatterns("/**")       // 所有路徑都攔截
-        .excludePathPatterns("/login", "/css/**", "/js/**","/products/**","/","/password/**","/logout","/users/**"); // 排除不需登入的路徑
+        .excludePathPatterns("/login", "/css/**", "/js/**","/products/**","/","/password/**","/logout","/users/**","/register"); // 排除不需登入的路徑
     }
     
     

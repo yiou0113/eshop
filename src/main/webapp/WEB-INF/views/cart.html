@@ -5,6 +5,16 @@
 <title>購物車</title>
 </head>
 <body>
+	<div class="container mt-5">
+		<div th:if="${message}" id="flashMessage" class="alert alert-success"
+			role="alert">
+			<span th:text="${message}"></span>
+		</div>
+		<div th:if="${error}" id="flashMessage" class="alert alert-danger"
+			role="alert">
+			<span th:text="${error}"></span>
+		</div>
+	</div>
 	<h1>我的購物車</h1>
 
 	<table border="1">
@@ -25,7 +35,7 @@
 					<form th:action="@{/cart/update}" method="post">
 						<input type="hidden" name="productId"
 							th:value="${item.product.id}"> <input type="number"
-							name="quantity" min="1" th:value="${item.quantity}">
+							name="quantity" th:attr="max=${item.product.stock}" min="1" th:value="${item.quantity}">
 						<button type="submit">更新</button>
 					</form>
 				</td>
@@ -48,11 +58,21 @@
 	<form th:if="${!isEmpty}" th:action="@{/orders/create}" method="post">
 		<button type="submit">結帳並建立訂單</button>
 	</form>
-	<p th:if="${isEmpty}" class="text-muted">
-    購物車目前沒有商品，無法結帳。
-</p>
+	<p th:if="${isEmpty}" class="text-muted">購物車目前沒有商品，無法結帳。</p>
 	<form th:action="@{/products}" method="get">
 		<button type="submit">返回商品列表</button>
 	</form>
 </body>
+<script>
+    // 取得 alert 元素
+    const flash = document.getElementById('flashMessage');
+    if (flash) {
+        // 3 秒後淡出
+        setTimeout(() => {
+            flash.style.transition = 'opacity 0.5s ease';
+            flash.style.opacity = '0';
+            setTimeout(() => flash.remove(), 500); // 0.5 秒後移除
+        }, 2500); // 顯示時間
+    }
+</script>
 </html>

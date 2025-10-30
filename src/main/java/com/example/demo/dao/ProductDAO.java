@@ -11,7 +11,7 @@ import java.util.List;
 public interface ProductDAO extends BaseDAO<Product> {    
     List<Product> findPaginated(int page, int size);
     
-    List<Product> findByCategoryId(Long categoryId);
+
     
     List<Product> findByCategoryIds(List<Long> categoryId, int page, int size);
     
@@ -20,4 +20,6 @@ public interface ProductDAO extends BaseDAO<Product> {
     List<Product> searchProductsByName(String keyword, int page, int size);
     
     int countProductsByName(String keyword);
+    
+    boolean reduceStock(Long productId, int quantity);
 }

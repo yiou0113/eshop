@@ -12,8 +12,7 @@
 		<h2 class="mb-4 text-center" th:text="#{login.header}">登入</h2>
 
 		<!-- 顯示錯誤訊息 -->
-		<div th:if="${param.error}" class="alert alert-danger"
-			th:text="#{login.error}">帳號或密碼錯誤</div>
+		<div th:if="${error}" class="alert alert-danger" th:text="${error}">帳號或密碼錯誤</div>
 
 		<!-- 顯示登出成功訊息 -->
 		<div th:if="${param.logout}" class="alert alert-success"
@@ -24,7 +23,8 @@
 			<div class="mb-3">
 				<label for="email" class="form-label" th:text="#{login.email}">信箱</label>
 				<input type="email" name="email" class="form-control" id="email"
-					placeholder="email" required>
+					placeholder="email" required
+					th:value="${loginDTO != null} ? ${loginDTO.email} : ''">
 			</div>
 
 			<div class="mb-3">

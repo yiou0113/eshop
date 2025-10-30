@@ -30,6 +30,10 @@
 			role="alert">
 			<span th:text="${message}"></span>
 		</div>
+		<div th:if="${error}" id="flashMessage" class="alert alert-danger"
+			role="alert">
+			<span th:text="${error}"></span>
+		</div>
 		<form th:action="@{/products/search}" method="get" class="mb-3">
 			<input type="text" name="keyword" th:value="${keyword}"
 				placeholder="搜尋商品名稱" />

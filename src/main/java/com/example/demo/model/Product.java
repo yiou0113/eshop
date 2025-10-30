@@ -20,8 +20,11 @@ public class Product {
 
     @Column(name="price",nullable = false,precision = 10, scale = 2)
     private BigDecimal price;
-
-    @Column(name = "image_url", length = 500)
+    
+    @Column(name = "stock", nullable = false)
+    private Integer stock = 0;
+    
+	@Column(name = "image_url", length = 500)
     private String imageUrl;
     
     @ManyToOne
@@ -46,6 +49,10 @@ public class Product {
     
     public Category getCategory() { return category; }
     public void setCategory(Category category) { this.category = category; }
+    
+    public Integer getStock() {return stock;}
+	public void setStock(Integer stock) {this.stock = stock;}
+
     
     @Override
     public String toString() {
