@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * UserService 的實作類別
  * 
- * 此類別負責處理與使用者（User）相關的商業邏輯，
+ * 此類別負責處理與使用者（User）相關的業務邏輯，
  * 並透過 UserDAO 與資料庫進行互動。
  * 
  * 功能包含：

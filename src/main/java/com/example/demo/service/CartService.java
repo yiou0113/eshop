@@ -6,13 +6,7 @@ import com.example.demo.model.Cart;
 /**
  * CartService 介面 — 定義購物車（Cart）相關的業務邏輯操作。
  *
- * 此介面負責管理顧客購物車，包括：
- * <ul>
- *     <li>新增商品到購物車</li>
- *     <li>移除商品或更新商品數量</li>
- *     <li>計算購物車總金額</li>
- *     <li>建立、查詢與清空購物車</li>
- * </ul>
+ * 提供客戶購物車新建與將商品加入購物車及判斷庫存是否足夠功能
  */
 public interface CartService {
 

@@ -18,8 +18,8 @@ import javax.servlet.http.HttpSession;
  * 包含：
  * - 顯示購物車內容
  * - 加入商品至購物車
- * - 更新商品數量
- * - 刪除商品
+ * - 更新購物車內商品數量
+ * - 刪除購物車內商品
  */
 @Controller
 @RequestMapping("/cart")
@@ -40,8 +40,7 @@ public class CartController {
      */
 	@GetMapping
 	public String viewCart(HttpSession session, Model model) {
-		// 從 Session 取得目前登入的使用者
-		
+		// 從 Session 取得目前登入的使用者	
 		User user = (User) session.getAttribute("loggedInUser");
 		// 根據使用者 ID 查找對應的顧客資料
 		Customer customer = customerSecvice.getCustomerByUserId(user.getId());
@@ -53,8 +52,10 @@ public class CartController {
 		if (cart == null) {
 			cart = new Cart();
 		}
+		//判斷購物車內是否為空，若為空回傳false
 		model.addAttribute("isEmpty", cartService.isCartEmpty(customer.getId()));
 		model.addAttribute("cart", cart);
+		//取得購物車內總金額
 		model.addAttribute("total", cartService.getCartTotal(customer.getId()));
 		return "cart";
 	}
@@ -66,7 +67,8 @@ public class CartController {
      * @param productId 商品 ID
      * @param quantity  購買數量
      * @param session   用於取得登入的使用者
-     * @return          重新導向至商品列表頁（/products）
+     * @param redirectAttributes 用於給予錯誤訊息
+     * @return	導回產品列表頁面
      */
 	@PostMapping("/add")
 	public String addToCart(@RequestParam Long productId, @RequestParam int quantity, HttpSession session,RedirectAttributes redirectAttributes) {
@@ -74,9 +76,7 @@ public class CartController {
 		User user = (User) session.getAttribute("loggedInUser");
 		// 根據使用者 ID 查找對應的顧客資料
 		Customer customer = customerSecvice.getCustomerByUserId(user.getId());
-		if (customer == null) {
-			return "redirect:/login";
-		}
+		//判斷購買數量是否符合庫存
 	    boolean success = cartService.addToCart(productId, quantity);
 	    if (!success) {
 	        redirectAttributes.addFlashAttribute("error", "購買數量不能超過庫存！");
@@ -93,7 +93,8 @@ public class CartController {
      * @param productId 商品 ID
      * @param quantity  新數量
      * @param session   用於取得登入的使用者
-     * @return          重新導向至購物車頁面
+     * @param redirectAttributes 用於給予錯誤訊息
+     * @return 導回購物車頁面
      */
 	// 更新商品數量
 	@PostMapping("/update")
@@ -103,9 +104,7 @@ public class CartController {
 		User user = (User) session.getAttribute("loggedInUser");
 		// 根據使用者 ID 查找對應的顧客資料
 		Customer customer = customerSecvice.getCustomerByUserId(user.getId());
-		if (customer == null) {
-			return "redirect:/login";
-		}
+		//判斷購買數量是否符合庫存
 		boolean success = cartService.addToCart(productId, quantity);
 	    if (!success) {
 	        redirectAttributes.addFlashAttribute("error", "購買數量不能超過庫存！");
@@ -121,7 +120,7 @@ public class CartController {
      *
      * @param productId 商品 ID
      * @param session   用於取得登入的使用者
-     * @return          重新導向至購物車頁面
+     * @return 導回購物車頁面
      */
 	@PostMapping("/remove")
 	public String removeItem(@RequestParam("productId") Long productId, HttpSession session) {
@@ -129,9 +128,6 @@ public class CartController {
 		User user = (User) session.getAttribute("loggedInUser");
 		// 根據使用者 ID 查找對應的顧客資料
 		Customer customer = customerSecvice.getCustomerByUserId(user.getId());
-		if (customer == null) {
-			return "redirect:/login";
-		}
 		cartService.removeItem(customer.getId(), productId);
 		return "redirect:/cart?userId=" + customer.getId();
 	}

@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * ProductService 的實作類別
  *
- * 此類別負責處理與商品（Product）相關的商業邏輯， 並透過 ProductDAO 與資料庫互動。
+ * 此類別負責處理與商品（Product）相關的業務邏輯， 並透過 ProductDAO 與資料庫互動。
  *
  * 功能包含：
  *  - 取得所有商品
@@ -82,7 +82,14 @@ public class ProductServiceImpl implements ProductService {
 		return productDAO.findPaginated(page, size);
 	}
 	
-
+	/**
+	 * 透過分類找出商品
+	 * 
+	 * @param categoryId	使用者目前選取的類別
+	 * @param page	目前頁碼 (從 1 開始)
+	 * @param size	每頁顯示的商品數量
+	 * @return List<Product> 該頁的商品列表
+	 */
 	@Override
 	public List<Product> getProductsByCategory(Long categoryId, int page, int size) {
 	    if (categoryId == null) {
@@ -91,7 +98,12 @@ public class ProductServiceImpl implements ProductService {
 	    List<Long> categoryIds = categoryService.getAllChildCategoryIds(categoryId);
 	    return productDAO.findByCategoryIds(categoryIds, page, size);
 	}
-
+	/**
+	 * 計算該類別的總商品術
+	 * 
+	 * @param categoryId	使用者目前選取的類別
+	 * @return	該分類總商品數
+	 */
 	@Override
 	public int countProductsByCategory(Long categoryId) {
 	    if (categoryId == null) {
@@ -100,11 +112,25 @@ public class ProductServiceImpl implements ProductService {
 	    List<Long> categoryIds = categoryService.getAllChildCategoryIds(categoryId);
 	    return productDAO.countByCategoryIds(categoryIds);
 	}
-	
+	/**
+	 * 透過關鍵字找出商品
+	 * 
+	 * @param keyword	使用者輸入的關鍵字
+	 * @param page	目前頁碼 (從 1 開始)
+	 * @param size	每頁顯示的商品數量
+	 * @return	List<Product> 該頁的商品列表
+	 */
+	@Override
 	public List<Product> searchProductsByNameWithPage(String keyword, int page, int size) {
 	    return productDAO.searchProductsByName(keyword, page, size);
 	}
-
+	/**
+	 * 計算關鍵字找出的商品總數
+	 * 
+	 * @param keyword	使用者目前輸入的關鍵字
+	 * @return	該關鍵字商品總數
+	 */
+	@Override
 	public int countProductsByName(String keyword) {
 	    return productDAO.countProductsByName(keyword);
 	}

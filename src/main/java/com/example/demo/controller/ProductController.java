@@ -17,9 +17,10 @@ import java.util.List;
 /**
  * 商品相關的 Controller
  *
- * 此控制器負責處理商品列表與商品詳細資訊的展示。 所有對應的 URL 都以 "/products" 開頭。
- *
- * 功能包含： - 商品列表（分頁顯示） - 商品詳細頁面
+ * 此控制器負責處理商品列表與商品詳細資訊的展示。 
+ * 包含： 
+ * - 商品列表（分頁顯示） 
+ * - 商品詳細頁面
  */
 @Controller
 @RequestMapping("/products")
@@ -36,7 +37,8 @@ public class ProductController {
 	 * 當使用者訪問 /products 時，會顯示商品列表頁面， 每頁顯示固定數量(目前設定為12)的商品，並計算總頁數。
 	 *
 	 * @param page  目前頁碼，預設為 1
-	 * @param model Spring MVC 的 Model，用於傳遞資料到視圖
+	 * @param categoryId	目前選取分類
+	 * @param model 用於傳遞資料到前端
 	 * @return 返回商品列表的模板名稱 "product-list" 對應 product-list.html
 	 */
 	@GetMapping
@@ -51,6 +53,7 @@ public class ProductController {
 			products = productService.getProductsByCategory(categoryId, page, pageSize);
 			totalProducts = productService.countProductsByCategory(categoryId);
 		} else {
+			// 查詢所有商品
 			products = productService.getProductsByPage(page, pageSize);
 			totalProducts = productService.getAllProducts().size();
 		}
@@ -60,7 +63,7 @@ public class ProductController {
 	        totalPages = 1;
 	    }
 
-		// 改用三層分類結構
+		// 用三層分類結構
 		List<Category> categoryTree = categoryService.getThreeLevelCategories();
 
 		model.addAttribute("products", products);
@@ -77,8 +80,8 @@ public class ProductController {
 	 * 當使用者訪問 /products/{id} 時，顯示該商品的詳細頁面。
 	 *
 	 * @param id    商品 ID
-	 * @param model Spring MVC 的 Model，用於傳遞商品資料到視圖
-	 * @return 返回商品詳細頁面的模板名稱 "product-detail" 對應 product-detail.html
+	 * @param model 用於傳遞商品資料到前端
+	 * @return 返回商品詳細頁面
 	 */
 	@GetMapping("/{id}")
 	public String viewProductDetail(@PathVariable Long id, Model model) {
@@ -86,7 +89,14 @@ public class ProductController {
 		model.addAttribute("product", product);
 		return "product-detail";
 	}
-
+	/**
+	 * 顯示使用者輸入關鍵字相關商品
+	 * 
+	 * @param keyword	使用者輸入的關鍵字
+	 * @param page	目前頁碼，預設為 1
+	 * @param model	用於傳遞資料到前端
+	 * @return	返回商品詳細頁面
+	 */
 	@GetMapping("/search")
 	public String searchProducts(@RequestParam(value = "keyword", required = false) String keyword,
 	        @RequestParam(defaultValue = "1") int page, Model model) {

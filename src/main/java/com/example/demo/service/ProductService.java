@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * ProductService 介面 — 定義商品（Product）相關的業務邏輯操作。
  *
- * 提供商品的基本 CRUD 操作與分頁查詢功能。
+ * 提供商品的基本 CRUD 操作與分頁查詢、關鍵字查詢等功能。
  * 
  */
 public interface ProductService {

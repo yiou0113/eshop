@@ -11,6 +11,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.example.demo.model.User;
 import com.example.demo.service.PasswordResetTokenService;
 import com.example.demo.service.UserService;
+/**
+ * PasswordResetController 負責處理忘記密碼相關的頁面顯示與操作
+ * 包含：
+ * - 忘記密碼頁面及操作
+ * - 重設密碼頁面及操作
+ */
 @Controller
 @RequestMapping("/password")
 public class PasswordResetController {
@@ -20,13 +26,23 @@ public class PasswordResetController {
 	    @Autowired
 	    private UserService userService;
 
-	    // 顯示輸入 email 頁面
+	    /**
+	     * 顯示忘記密碼頁面
+	     * 
+	     * @return	導回忘記密碼頁面
+	     */
 	    @GetMapping("/forgot")
 	    public String showForgotPasswordForm() {
 	        return "forgot-password";
 	    }
 
-	    // 提交 email 產生 token
+	    /**
+	     * 實作忘記密碼功能
+	     * 
+	     * @param email	使用者輸入信箱以變更密碼
+	     * @param model	用來將資料傳到前端
+	     * @return	導回忘記密碼頁面
+	     */
 	    @PostMapping("/forgot")
 	    public String handleForgotPassword(@RequestParam("email") String email, Model model) {
 	        String token = tokenService.createTokenForEmail(email);
@@ -34,12 +50,16 @@ public class PasswordResetController {
 	            model.addAttribute("error", "Email not found");
 	            return "forgot-password";
 	        }
-	        // 模擬寄信：直接顯示 token
 	        model.addAttribute("message", "Password reset token:http://localhost:8080/echop/password/reset?token=" + token);
 	        return "forgot-password";
 	    }
 
-	    // 顯示輸入新密碼頁面
+	    /**
+	     * 顯示重製密碼頁面
+	     * @param token	獲取忘記密碼token
+	     * @param model	用來將資料傳到前端
+	     * @return	導回重製密碼頁面
+	     */
 	    @GetMapping("/reset")
 	    public String showResetForm(@RequestParam("token") String token, Model model) {
 	        boolean valid = tokenService.validateToken(token);
@@ -51,7 +71,13 @@ public class PasswordResetController {
 	        return "reset-password";
 	    }
 
-	    // 提交新密碼
+	    /**
+	     * 提交新密碼以重設
+	     * @param token	獲取忘記密碼token
+	     * @param password	使用者輸入新密碼
+	     * @param model	用來將資料傳到前端
+	     * @return	導回重製密碼頁面
+	     */
 	    @PostMapping("/reset")
 	    public String handleReset(@RequestParam("token") String token,
 	                              @RequestParam("password") String password,

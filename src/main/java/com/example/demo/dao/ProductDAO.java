@@ -4,14 +4,21 @@ import com.example.demo.model.Product;
 
 import java.util.List;
 /**
- * ProductDAO 介面 — 定義商品（Product）資料存取操作（Data Access Object）。
+ * ProductDAO 介面
  *
- * 此介面負責與資料庫互動，提供商品的 CRUD 操作及分頁查詢。
+ * <p>此介面繼承 {@link BaseDAO}，負責定義商品（{@link Product}）的資料存取操作。</p>
+ *
+ * <p>主要功能包含：</p>
+ * <ul>
+ *   <li>商品的分頁查詢</li>
+ *   <li>依分類 ID 查詢與計算商品數量</li>
+ *   <li>依商品名稱關鍵字搜尋與統計</li>
+ *   <li>扣減商品庫存數量</li>
+ * </ul>
+ *
  */
 public interface ProductDAO extends BaseDAO<Product> {    
     List<Product> findPaginated(int page, int size);
-    
-
     
     List<Product> findByCategoryIds(List<Long> categoryId, int page, int size);
     

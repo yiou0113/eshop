@@ -24,8 +24,6 @@ import com.example.demo.service.OrderService;
  * OrderService 的實作類別
  *
  * 此類別主要負責處理訂單的業務邏輯： - 從購物車建立訂單 - 查詢、儲存訂單 - 根據顧客 ID 查詢訂單
- *
- * 透過 @Transactional 確保方法在資料庫操作時具有事務一致性。
  */
 @Service
 @Transactional
@@ -45,11 +43,11 @@ public class OrderServiceImpl implements OrderService {
 	/**
 	 * 根據顧客 ID 建立新訂單。
 	 *
-	 * 此方法會： 1. 讀取顧客的購物車。 2. 檢查購物車是否為空。 3. 將購物車內的商品轉換為訂單項目。 4. 計算總金額並儲存訂單。 5. 清空購物車。
+	 * 此方法會： 1. 讀取顧客的購物車。 2. 檢查購物車是否為空。 3. 判斷商品庫存量是否足夠並加入購物車。 4. 計算總金額並儲存訂單。 5. 清空購物車。
 	 *
-	 * @param customerId 顧客的唯一識別碼
+	 * @param customerId 顧客ID
 	 * @return 建立完成的訂單物件
-	 * @throws RuntimeException 當購物車為空或不存在時拋出
+	 * @throws RuntimeException 當購物車為空或不存在時及庫存量或商品不存在時拋出
 	 */
 	public Order createOrder(Long customerId) {
 
@@ -152,12 +150,19 @@ public class OrderServiceImpl implements OrderService {
 		List<Order> orders = orderDAO.findByCustomerId(customerId);
 		if (orders == null || orders.isEmpty()) {
 			logger.info("顧客 ID {} 尚無訂單紀錄。", customerId);
-			return List.of(); // Java 9+：更節省記憶體的不可變空集合
+			return List.of();
 		}
 		logger.info("查詢到顧客 ID {} 的訂單，共 {} 筆。", customerId, orders.size());
 		return orders;
 	}
 
+	
+
+	/**
+	 * 取消訂單
+	 * 
+	 * @param orderId	訂單ID
+	 */
 	@Override
 	public void cancelOrder(Long orderId) {
 		Order order = getOrderById(orderId);
@@ -166,6 +171,11 @@ public class OrderServiceImpl implements OrderService {
 		orderDAO.save(order); // 或使用 Hibernate session.update(order)
 	}
 
+	/**
+	 * 訂單付款
+	 * 
+	 * @param orderId	訂單ID
+	 */
 	@Override
 	public void payOrder(Long orderId) {
 		Order order = getOrderById(orderId);

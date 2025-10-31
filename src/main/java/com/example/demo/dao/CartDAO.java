@@ -4,13 +4,18 @@ import java.util.Optional;
 
 import com.example.demo.model.Cart;
 /**
- * CartDAO 介面 — 定義購物車（Cart）資料存取操作。
+ * CartDAO 介面
  *
- * 此介面負責與資料庫互動，提供購物車的基本資料操作：
- * - 根據顧客 ID 查詢購物車
- * - 儲存或更新購物車
- * - 刪除整個購物車
- * - 刪除購物車中指定商品
+ * <p>此介面繼承 {@link BaseDAO}，負責定義購物車（{@link Cart}）相關的資料存取操作。</p>
+ *
+ * <p>主要功能包含：</p>
+ * <ul>
+ *   <li>基本的購物車 CRUD 操作（建立、查詢、更新、刪除）</li>
+ *   <li>根據顧客 ID 查詢購物車內容</li>
+ *   <li>刪除整個購物車</li>
+ *   <li>刪除購物車中特定商品</li>
+ * </ul>
+ *
  */
 public interface CartDAO extends BaseDAO<Cart> {
 	Optional<Cart> findByCustomerId(Long custId);

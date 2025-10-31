@@ -10,23 +10,30 @@ import com.example.demo.model.Customer;
 /**
  * CustomerDAO 的實作類別
  *
- * 此類別負責與資料庫互動，透過 Hibernate Session 操作顧客（Customer）資料。
+ * <p>此類別繼承 {@link BaseDAOImpl} 並實作 {@link CustomerDAO}，
+ * 負責與資料庫互動，提供顧客（{@link Customer}）資料的 CRUD 與特定查詢操作。</p>
  *
- * 功能包含： - 儲存或更新顧客 - 根據 ID 查詢顧客 - 根據 User ID 查詢對應顧客
+ * <p>主要功能：</p>
+ * <ul>
+ *   <li>儲存或更新顧客資料</li>
+ *   <li>依 ID 查詢顧客</li>
+ *   <li>依使用者 ID 查詢對應的顧客</li>
+ * </ul>
+ *
  */
-
 @Repository
 public class CustomerDAOImpl extends BaseDAOImpl<Customer> implements CustomerDAO {
 	private static final Logger logger = LoggerFactory.getLogger(CustomerDAOImpl.class);
 
 	/**
-	 * 根據 User ID 查詢對應顧客
-	 *
-	 * 使用 HQL 查詢 Customer 表中關聯的 User ID。 若查詢失敗或找不到資料，會記錄錯誤並回傳 null。
-	 *
-	 * @param userId 使用者的唯一識別碼
-	 * @return Customer 物件，若找不到或發生例外則回傳 null
-	 */
+     * 根據使用者 ID 查詢對應顧客。
+     *
+     * <p>此方法使用 HQL 查詢 Customer 表中關聯的 User ID。若查詢失敗或找不到資料，
+     * 會記錄錯誤並回傳 {@code null}。</p>
+     *
+     * @param userId 使用者的唯一識別碼
+     * @return {@link Customer} 物件；若找不到或發生例外則回傳 {@code null}
+     */
 	@Override
 	public Customer findByUserId(Long userId) {
 		try {

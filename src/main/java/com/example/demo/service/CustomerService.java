@@ -1,7 +1,6 @@
 package com.example.demo.service;
 
 import com.example.demo.model.Customer;
-import com.example.demo.model.User;
 /**
  * CustomerService 介面 — 定義顧客（Customer）相關的業務邏輯操作。
  *

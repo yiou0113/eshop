@@ -6,7 +6,7 @@ import com.example.demo.model.Order;
 /**
  * OrderService 介面 — 定義訂單（Order）相關的業務邏輯操作。
  *
- * 提供訂單的基本功能與與額外功能，例如依照客戶id查詢訂單。
+ * 提供訂單的基本CRUD功能與與額外功能，例如依照客戶id查詢訂單、訂單付款與取消訂單。
  */
 public interface OrderService {
 	Order createOrder(Long userId);
