@@ -69,13 +69,20 @@ public class CustomerServiceImpl implements CustomerService {
 	/**
 	 * 根據使用者 ID 查詢對應的顧客資料
 	 *
-	 * @param userId 使用者唯一識別碼
+	 * @param userId 取得使用者的 ID
 	 * @return 對應的 {@link Customer} 物件；若找不到則回傳 {@code null}
 	 */
 	public Customer getCustomerByUserId(Long userId) {
 		return customerDAO.findByUserId(userId);
 	}
-
+	
+	/**
+	 * 修改使用者密碼
+	 * 
+	 * @param id	取得使用者的 ID
+	 * @param newpassword	修改後密碼
+	 * @return	將修改後密碼存入資料庫
+	 */
 	@Override
 	public void updateCustomerPassword(Long id, String newPassword) {
 		User existingUser = userDAO.findById(id);
@@ -89,7 +96,13 @@ public class CustomerServiceImpl implements CustomerService {
 			userDAO.save(existingUser);
 		}
 	}
-
+	
+	/**
+	 * 修改使用者客戶資訊
+	 * 
+	 * @param id	取得使用者 ID
+	 * @param updateCustomer	取得修改客戶物件
+	 */
 	@Override
 	public void updateCustomerInfo(Long id, Customer updatedCustomer) {
 		User existingUser = userDAO.findById(id);
@@ -102,6 +115,13 @@ public class CustomerServiceImpl implements CustomerService {
 		customerDAO.save(existingCustomer);
 	}
 
+	/**
+	 * 判斷使用者輸入密碼是否相符
+	 * 
+	 * @param id	取得使用者 ID
+	 * @param oldPassword	取得使用者輸入的密碼
+	 * @return	true或false
+	 */
 	@Override
 	public boolean checkPassword(Long id, String oldPassword) {
 		User existingUser = userDAO.findById(id);

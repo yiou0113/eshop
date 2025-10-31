@@ -27,7 +27,8 @@ import org.thymeleaf.templatemode.TemplateMode;
 public class WebMvcConfig implements WebMvcConfigurer {
 	@Autowired
     private AuthInterceptor authInterceptor;
-	
+	@Autowired
+    private CustomerInterceptor customerInterceptor;
     @Bean
     public SpringResourceTemplateResolver templateResolver() {
         SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
@@ -94,9 +95,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
+        
         registry.addInterceptor(authInterceptor)
         .addPathPatterns("/**")       // 所有路徑都攔截
         .excludePathPatterns("/login", "/css/**", "/js/**","/products/**","/","/password/**","/logout","/users/**","/register"); // 排除不需登入的路徑
+        
+        registry.addInterceptor(customerInterceptor)
+        .addPathPatterns("/cart/**", "/order/**", "/user/**"); // 只有需要會員資料的功能
     }
     
     

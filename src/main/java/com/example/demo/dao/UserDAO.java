@@ -3,9 +3,16 @@ package com.example.demo.dao;
 import com.example.demo.model.User;
 
 /**
- * UserDAO 介面 — 定義使用者（User）資料存取操作（Data Access Object）。
+ * UserDAO 介面
  *
- * 此介面負責與資料庫互動，提供使用者 CRUD操作與依信箱查詢使用者功能。
+ * <p>此介面繼承 {@link BaseDAO}，負責定義與使用者（{@link User}）相關的資料存取操作。</p>
+ *
+ * <p>主要功能包含：</p>
+ * <ul>
+ *   <li>基本的使用者 CRUD 操作（建立、讀取、更新、刪除）</li>
+ *   <li>依電子郵件（Email）查詢使用者資料</li>
+ * </ul>
+ *
  */
 public interface UserDAO extends BaseDAO<User> {
     User findByEmail(String email);

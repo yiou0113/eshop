@@ -18,7 +18,7 @@ public class AuthServiceImpl implements AuthService {
 	private UserService userService;
 	
 	@Autowired
-	private PasswordEncoder passwordEncoder;// 用於密碼加密的工具類別
+	private PasswordEncoder passwordEncoder;
 	
 	/**
      * 使用電子郵件與密碼進行登入

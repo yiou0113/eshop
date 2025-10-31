@@ -169,11 +169,21 @@ public class CartServiceImpl implements CartService {
 		return cart;
 		
 	}
+	/**
+	 * 判斷購物車是否為空
+	 * @param customerId	顧客Id
+	 * @return	true或false
+	 */
 	@Override
 	public boolean isCartEmpty(Long customerId) {
 	    Cart cart = getCartByCustomerId(customerId);
 	    return cart == null || cart.getItems() == null || cart.getItems().isEmpty();
 	}
+	/**
+	 * 判斷商品庫存量是否足夠購買
+	 * 
+	 * @return true或false
+	 */
 	@Override
 	public boolean addToCart(Long productId, int quantity) {
 	    Product product = productDAO.findById(productId);

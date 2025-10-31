@@ -15,18 +15,55 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.example.demo.model.Customer;
 import com.example.demo.model.User;
 import com.example.demo.service.CustomerService;
-
+/**
+ * CustomerController 負責處理客戶相關的顯示頁面與操作
+ * 包含：
+ * - 客戶個人資訊顯示
+ * - 驗證重設密碼時輸入密碼是否正確
+ * - 客戶密碼重設
+ * - 客戶個人資訊重設
+ * 
+ */
 @Controller
 @RequestMapping("/user")
 public class CustomerController {
 	@Autowired
 	private CustomerService customerService;
-
+	
+	/**
+	 * 列出客戶個人資訊
+	 * 
+	 * @param session 用來取得目前登入的使用者資訊
+	 * @param model	用來將資訊傳道前端
+	 * @return	回傳道customer-profile頁面
+	 */
+	@GetMapping("/account/profile")
+	public String customerProfile(HttpSession session, Model model) {
+		User user = (User) session.getAttribute("loggedInUser");
+		Customer customer = customerService.getCustomerByUserId(user.getId());
+		model.addAttribute("customer", customer);
+		model.addAttribute("user", user);
+		return "customer-profile";
+	}
+	
+	/**
+	 * 用於顯示驗證密碼頁面
+	 * 
+	 * @return 導向驗證密碼頁面
+	 */
 	@GetMapping("/verify/password")
 	public String verifyPasswordForm() {
 		return "verify-password";
 	}
 
+	/**
+	 * 驗證密碼是否正確
+	 * 
+	 * @param password 	使用者輸入密碼進行比對
+	 * @param session	用來取得目前登入的使用者資訊與密碼輸入正確存入資訊
+	 * @param redirectAttributes	用於給予錯誤訊息
+	 * @return	導回修改密碼頁面
+	 */
 	@PostMapping("/verify/password")
 	public String verifyPassword(@RequestParam("password") String password, HttpSession session,
 			RedirectAttributes redirectAttributes) {
@@ -46,20 +83,24 @@ public class CustomerController {
 		}
 	}
 
-	@GetMapping("/account/profile")
-	public String customerProfile(HttpSession session, Model model) {
-		User user = (User) session.getAttribute("loggedInUser");
-		Customer customer = customerService.getCustomerByUserId(user.getId());
-		model.addAttribute("customer", customer);
-		model.addAttribute("user", user);
-		return "customer-profile";
-	}
-
+	
+	/**
+	 * 用於顯示修改密碼頁面
+	 * 
+	 * @return 導向修改密碼頁面
+	 */
 	@GetMapping("/account/password")
 	public String changePsswordForm() {
 		return "change-password";
 	}
 
+	/**
+	 * 讓使用者更新密碼
+	 * @param password	使用者輸入想更改的密碼
+	 * @param session	用來取得目前登入的使用者資訊與密碼輸入正確資訊
+	 * @param redirectAttributes	用於給予錯誤訊息
+	 * @return	導回個人資訊頁面
+	 */
 	@PostMapping("/account/password")
 	public String changePassword(@RequestParam("password") String password, HttpSession session,
 			RedirectAttributes redirectAttributes) {
@@ -91,6 +132,14 @@ public class CustomerController {
 		return "redirect:/user/account/profile"; // 成功後返回個人資料頁
 	}
 
+	/**
+	 * 更新使用者個人資訊
+	 * 
+	 * @param customer	取得客戶資訊
+	 * @param session	用來取得目前登入的使用者資訊
+	 * @param redirectAttributes	用於給予錯誤訊息
+	 * @return	導回個人資訊頁面
+	 */
 	@PostMapping("/update")
 	public String updateUser(@ModelAttribute("customer") Customer customer, HttpSession session,
 			RedirectAttributes redirectAttributes) {

@@ -42,14 +42,12 @@ public class RegisterController {
     /**
      * 處理註冊表單提交
      *
-     * 當使用者提交註冊表單（POST 到 `/register`）時，
      * 此方法會接收表單中的使用者輸入，
-     * 呼叫 {@link CustomerService#registerCustomer(String, String, String, String, String)}
      * 進行註冊，最後導向至登入頁面。
      *
      * @param name     使用者姓名
      * @param email    使用者電子郵件
-     * @param password 使用者密碼（明文）
+     * @param password 使用者密碼
      * @param phone    使用者電話
      * @param address  使用者地址
      * @return 導向至登入頁面 `/login`

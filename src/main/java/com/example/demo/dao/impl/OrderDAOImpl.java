@@ -13,29 +13,34 @@ import com.example.demo.model.Order;
 /**
  * OrderDAO 的實作類別
  *
- * 此類別負責與資料庫進行互動，透過 Hibernate Session 操作訂單（Order）的 CRUD 功能與查詢功能。
+ * <p>此類別繼承 {@link BaseDAOImpl} 並實作 {@link OrderDAO}，
+ * 負責與資料庫互動，提供訂單（{@link Order}）的 CRUD 與特定查詢操作。</p>
  *
- * 主要功能包含： 
- * - 儲存或更新訂單
- * - 根據 ID 查詢單一訂單 
- * - 查詢所有訂單 
- * - 根據顧客 ID 查詢該顧客的所有訂單
+ * <p>主要功能：</p>
+ * <ul>
+ *   <li>儲存或更新訂單</li>
+ *   <li>依 ID 查詢單一訂單</li>
+ *   <li>查詢所有訂單</li>
+ *   <li>依顧客 ID 查詢該顧客的所有訂單</li>
+ * </ul>
+ *
  */
 @Repository
 public class OrderDAOImpl extends BaseDAOImpl<Order> implements OrderDAO {
 	/** Logger，用於記錄執行過程與錯誤訊息 */
     private static final Logger logger = LoggerFactory.getLogger(OrderDAOImpl.class);
 
-	/**
-	 * 根據顧客 ID 查詢該顧客的所有訂單。
-	 *
-	 * 使用 HQL（Hibernate Query Language）查詢 `Order` 表中 關聯到指定 `Customer` 的所有訂單資料。
-	 *
-	 * 若查詢過程中發生例外，會回傳一個空的列表。
-	 *
-	 * @param customerId 顧客的唯一識別碼。
-	 * @return List<Order> 該顧客的訂單列表，若查無資料或發生錯誤則回傳空集合。
-	 */
+    /**
+     * 根據顧客 ID 查詢該顧客的所有訂單。
+     *
+     * <p>此方法使用 HQL（Hibernate Query Language）查詢 {@code Order} 表中
+     * 關聯到指定 {@code Customer} 的所有訂單資料。</p>
+     *
+     * <p>若查詢過程中發生例外，會回傳一個空的列表以避免系統中斷。</p>
+     *
+     * @param customerId 顧客的唯一識別碼
+     * @return {@link List} 包含該顧客的訂單；若查無資料或發生錯誤則回傳空集合
+     */
 	@Override
 	public List<Order> findByCustomerId(Long customerId) {
 		try {

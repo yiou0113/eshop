@@ -19,11 +19,13 @@ import javax.servlet.http.HttpSession;
 /**
  * 訂單相關的 Controller
  *
- * 此控制器負責處理顧客訂單的瀏覽、建立與詳細頁面。
+ * 此控制器負責處理顧客訂單的瀏覽、建立、付款或取消與詳細頁面。
  * 包含：
  * - 查看顧客所有訂單
  * - 由購物車結帳建立新訂單
  * - 查看單一訂單詳情
+ * - 訂單成立付款
+ * - 訂單取消
  */
 @Controller
 @RequestMapping("/orders")
@@ -39,16 +41,11 @@ public class OrderController {
     
     /**
      * 顯示顧客所有訂單
-     *
-     * 1. 從 HttpSession 取得已登入的使用者
-     * 2. 根據使用者 ID 取得對應的顧客資料
-     * 3. 查詢該顧客的所有訂單
-     * 4. 若無訂單則在 model 中加入提示訊息
-     * 5. 將訂單列表或訊息放入 Model 傳給前端模板
+     * 若使用者為登入導回登入畫面
      *
      * @param session HttpSession，用於取得已登入使用者
      * @param model Spring MVC Model，用於傳遞資料到模板
-     * @return 返回訂單列表頁面 "order-list"
+     * @return 返回訂單頁面
      */
     @GetMapping
     public String viewOrders(HttpSession session, Model model) {
@@ -65,16 +62,11 @@ public class OrderController {
 
     /**
      * 由購物車結帳建立新訂單
-     *
-     * 1. 從 HttpSession 取得已登入使用者
-     * 2. 根據使用者 ID 取得顧客資料
-     * 3. 呼叫 OrderService 建立訂單
-     * 4. 若建立成功，將訂單與顧客名稱放入 Model，返回成功頁面
-     * 5. 若建立失敗（例如購物車為空），將錯誤訊息放入 Model，返回購物車頁面
+     * 建立訂單時確認商品庫存並
      *
      * @param session HttpSession，用於取得已登入使用者
      * @param model Spring MVC Model，用於傳遞資料到模板
-     * @return 成功返回 "order-success"，失敗返回 "cart"
+     * @return 返回成功頁面
      */
     @PostMapping("/create")
     public String createOrder(HttpSession session, Model model) {
@@ -95,11 +87,6 @@ public class OrderController {
     /**
      * 查看單一訂單詳細資訊
      *
-     * 1. 從 HttpSession 取得已登入使用者
-     * 2. 根據使用者 ID 取得顧客資料
-     * 3. 根據訂單 ID 取得訂單資訊
-     * 4. 驗證該訂單是否屬於該顧客，若不屬於，導向訂單列表頁
-     * 5. 將訂單資料放入 Model，返回訂單詳情頁面
      *
      * @param id 訂單 ID
      * @param session HttpSession，用於取得已登入使用者
@@ -118,7 +105,13 @@ public class OrderController {
         model.addAttribute("order", order);
         return "order-detail";
     }
-    
+    /**
+     * 對訂單進行付款
+     * @param id 訂單 ID
+     * @param session HttpSession，用於取得已登入使用者
+     * @param model Spring MVC Model，用於傳遞資料到模板
+     * @return 訂單成立後返回訂單列表
+     */
     @PostMapping("/{id}/pay")
     public String payOrder(@PathVariable("id") Long id, HttpSession session, Model model) {
         User user = (User) session.getAttribute("loggedInUser");
@@ -136,6 +129,13 @@ public class OrderController {
         model.addAttribute("message", "付款成功！");
         return "redirect:/orders";
     }
+    /**
+     * 對訂單進行取消
+     * @param id 訂單 ID
+     * @param session HttpSession，用於取得已登入使用者
+     * @param model Spring MVC Model，用於傳遞資料到模板
+     * @return 訂單取消後返回訂單列表
+     */
     @PostMapping("/{id}/cancel")
     public String cancelOrder(@PathVariable("id") Long id, HttpSession session, Model model) {
         User user = (User) session.getAttribute("loggedInUser");

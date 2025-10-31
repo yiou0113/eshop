@@ -41,6 +41,14 @@ public class LoginController {
 	    return "login"; // 對應 login.html
 	}
 
+	/**
+	 * 處理登入請求，並核對信箱密碼
+	 * @param dto 判斷輸入資料格式正確性
+	 * @param result 接收dto的錯誤訊息
+	 * @param session HttpSession，用於取得已登入使用者
+	 * @param redirectAttrs 用於給予錯誤訊息
+	 * @return
+	 */
 	@PostMapping("/login")
 	public String login(@Valid @ModelAttribute("loginDTO") LoginDTO dto, BindingResult result, HttpSession session,
 			RedirectAttributes redirectAttrs) {

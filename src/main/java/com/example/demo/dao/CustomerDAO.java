@@ -2,9 +2,15 @@ package com.example.demo.dao;
 
 import com.example.demo.model.Customer;
 /**
- * CustomerDAO 介面 — 定義顧客（Customer）資料存取操作（Data Access Object）。
+ * CustomerDAO 介面
  *
- * 此介面負責與資料庫互動，提供顧客的儲存與查詢操作及依使用者查詢顧客的功能。
+ * <p>此介面繼承 {@link BaseDAO}，負責定義顧客（{@link Customer}）相關的資料存取操作。</p>
+ *
+ * <p>主要功能包含：</p>
+ * <ul>
+ *   <li>基本的顧客 CRUD 操作（建立、查詢、更新、刪除）</li>
+ *   <li>根據使用者 ID 查詢對應顧客資料</li>
+ * </ul>
  */
 public interface CustomerDAO extends BaseDAO<Customer> {
     Customer findByUserId(Long userId);
