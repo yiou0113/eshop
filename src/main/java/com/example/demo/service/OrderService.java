@@ -9,7 +9,7 @@ import com.example.demo.model.Order;
  * 提供訂單的基本CRUD功能與與額外功能，例如依照客戶id查詢訂單、訂單付款與取消訂單。
  */
 public interface OrderService {
-	Order createOrder(Long userId);
+	Order createOrder(Long customerId, List<Long> selectedProductIds);
 	
 	void saveOrder(Order order);
 

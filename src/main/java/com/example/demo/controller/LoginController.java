@@ -73,11 +73,11 @@ public class LoginController {
 	 * 清除 Session 以結束登入狀態，並重新導回登入頁。
 	 *
 	 * @param session 當前使用者 Session
-	 * @return 導向 login.html
+	 * @return 導向 products
 	 */
 	@GetMapping("/logout")
 	public String logout(HttpSession session) {
 		session.invalidate();// 清空 Session
-		return "redirect:/login";
+		return "redirect:/products";
 	}
 }

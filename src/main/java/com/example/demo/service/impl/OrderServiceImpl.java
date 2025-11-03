@@ -3,6 +3,7 @@ package com.example.demo.service.impl;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,34 +44,40 @@ public class OrderServiceImpl implements OrderService {
 	/**
 	 * 根據顧客 ID 建立新訂單。
 	 *
-	 * 此方法會： 1. 讀取顧客的購物車。 2. 檢查購物車是否為空。 3. 判斷商品庫存量是否足夠並加入購物車。 4. 計算總金額並儲存訂單。 5. 清空購物車。
+	 * 此方法會： 1. 讀取顧客的購物車。 2. 檢查購物車是否為空。 3. 判斷商品庫存量是否足夠並加入購物車。 4. 計算總金額並儲存訂單。 5.
+	 * 清空購物車。
 	 *
 	 * @param customerId 顧客ID
 	 * @return 建立完成的訂單物件
 	 * @throws RuntimeException 當購物車為空或不存在時及庫存量或商品不存在時拋出
 	 */
-	public Order createOrder(Long customerId) {
+	@Override
+	public Order createOrder(Long customerId, List<Long> selectedProductIds) {
 
 		Optional<Cart> optionalCart = cartDAO.findByCustomerId(customerId);
 		Cart cart = optionalCart.orElse(null); // 若找不到則為 null
 
 		if (cart == null || cart.getItems().isEmpty()) {
 			logger.warn("顧客 ID {} 的購物車為空，無法建立訂單。", customerId);
-			throw new RuntimeException("購物車為空");	
+			throw new RuntimeException("購物車為空");
 		}
-
+		List<CartItem> selectedItems = cart.getItems().stream()
+				.filter(item -> selectedProductIds.contains(item.getProduct().getId())).collect(Collectors.toList());
+		if (selectedItems.isEmpty()) {
+			throw new RuntimeException("未選擇任何商品建立訂單");
+		}
 		Order order = new Order();
 		order.setCustomer(cart.getCustomer());
 		order.setStatus("待付款");
 		BigDecimal total = BigDecimal.ZERO;
 
-		for (CartItem cartItem : cart.getItems()) {
+		for (CartItem cartItem : selectedItems) {
 			Product product = productDAO.findById(cartItem.getProduct().getId());
 			if (product == null)
 				throw new RuntimeException("商品不存在");
 			boolean success = productDAO.reduceStock(cartItem.getProduct().getId(), cartItem.getQuantity());
 			if (!success) {
-			    throw new RuntimeException("庫存不足");
+				throw new RuntimeException("庫存不足");
 			}
 
 			product.setStock(product.getStock() - cartItem.getQuantity());
@@ -89,7 +96,7 @@ public class OrderServiceImpl implements OrderService {
 		order.setTotalAmount(total);
 		orderDAO.save(order);
 
-		cart.getItems().clear(); // 或用 DAO 刪除
+		cart.getItems().removeIf(item -> selectedProductIds.contains(item.getProduct().getId()));
 		cartDAO.save(cart);
 
 		return order;
@@ -156,12 +163,10 @@ public class OrderServiceImpl implements OrderService {
 		return orders;
 	}
 
-	
-
 	/**
 	 * 取消訂單
 	 * 
-	 * @param orderId	訂單ID
+	 * @param orderId 訂單ID
 	 */
 	@Override
 	public void cancelOrder(Long orderId) {
@@ -174,7 +179,7 @@ public class OrderServiceImpl implements OrderService {
 	/**
 	 * 訂單付款
 	 * 
-	 * @param orderId	訂單ID
+	 * @param orderId 訂單ID
 	 */
 	@Override
 	public void payOrder(Long orderId) {

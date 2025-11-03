@@ -1,48 +1,73 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<title>我的訂單</title>
+    <title>我的訂單</title>
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: center; /* 水平置中 */
+            align-items: flex-start; /* 垂直靠上 */
+            min-height: 100vh;
+            padding-top: 50px;
+            background-color: #f8f9fa;
+        }
+
+        table {
+            width: 80%;
+            text-align: center; /* 文字預設置中 */
+        }
+
+        .amount {
+            text-align: right; /* 金額靠右 */
+        }
+         /* 顯眼化待付款列 */
+        .highlight-row {
+            background-color: #e3f2fd !important; /* 淡藍色 */
+        }
+
+        /* 強調「查看」按鈕 */
+        .btn-view {
+            border-radius: 20px;
+            padding: 5px 15px;
+        }
+    </style>
 </head>
 <body>
-	<h2>我的訂單</h2>
+    <div>
+        <h2 class="text-center mb-4">我的訂單</h2>
 
-	<table border="1">
-		<thead>
-			<tr>
-				<th>訂單編號</th>
-				<th>總金額</th>
-				<th>狀態</th>
-				<th>建立日期</th>
-				<th>查看詳情</th>
-				<th>訂單操作</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr th:each="order : ${orders}">
-				<td th:text="${order.id}"></td>
-				<td
-					th:text="${'NT$ ' + #numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 2, 'POINT')}"></td>
-				<td th:text="${order.status}"></td>
-				<td th:text="${order.createdAt}"></td>
-				<td><a th:href="@{/orders/{id}(id=${order.id})}">查看</a></td>
-				<td>
-					<!-- 付款按鈕 -->
-					<form th:if="${order.status == '待付款'}"
-						th:action="@{/orders/{id}/pay(id=${order.id})}" method="post"
-						style="display: inline">
-						<button type="submit" class="btn btn-success">付款</button>
-					</form> <!-- 取消訂單按鈕 -->
-					<form th:if="${order.status == '待付款'}"
-						th:action="@{/orders/{id}/cancel(id=${order.id})}" method="post"
-						style="display: inline">
-						<button type="submit" class="btn btn-danger">取消訂單</button>
-					</form>
-				</td>
-			</tr>
-		</tbody>
-	</table>
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>訂單編號</th>
+                    <th>總金額</th>
+                    <th>狀態</th>
+                    <th>建立日期</th>
+                    <th>查看詳情</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="order : ${orders}">
+                    <td th:text="${order.id}"></td>
+                    <td class="amount"
+                        th:text="${'NT$ ' + #numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')}"></td>
+                    <td th:text="${order.status}"></td>
+                    <td th:text="${order.createdAt}"></td>
+                    <td> <a th:href="@{/orders/{id}(id=${order.id})}"
+                            th:class="${order.status == '待付款'} ? 'btn btn-primary btn-view' : 'btn btn-outline-secondary btn-view'">
+                            查看
+                        </a>
+                        </td>
+                </tr>
+            </tbody>
+        </table>
 
-	<br>
-	<a th:href="@{/products}">返回商品列表</a>
+        <div class="text-center mt-3">
+            <a class="btn btn-primary" th:href="@{/products}">返回商品列表</a>
+        </div>
+    </div>
 </body>
 </html>

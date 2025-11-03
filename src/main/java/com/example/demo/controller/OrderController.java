@@ -64,20 +64,31 @@ public class OrderController {
      * 由購物車結帳建立新訂單
      * 建立訂單時確認商品庫存並
      *
+     * @param selectedProductIds 用於取得以選取商品ID
      * @param session HttpSession，用於取得已登入使用者
      * @param model Spring MVC Model，用於傳遞資料到模板
      * @return 返回成功頁面
      */
     @PostMapping("/create")
-    public String createOrder(HttpSession session, Model model) {
+    public String createOrder(@RequestParam(value="selectedProducts", required=false) List<Long> selectedProductIds,HttpSession session, Model model) {
     	User user = (User) session.getAttribute("loggedInUser");
         Customer customer = customerService.getCustomerByUserId(user.getId());
+
+        // 如果沒有選擇任何商品
+        if (selectedProductIds == null || selectedProductIds.isEmpty()) {
+            model.addAttribute("error", "請至少選擇一個商品建立訂單！");
+            return "cart";
+        }
+
         try {
-        	String customerName = customer.getName();
-            Order order = orderService.createOrder(customer.getId());
+            String customerName = customer.getName();
+
+            // 呼叫 Service 建立訂單，只傳入被勾選的商品
+            Order order = orderService.createOrder(customer.getId(), selectedProductIds);
+
             model.addAttribute("customerName", customerName);
             model.addAttribute("order", order);
-            return "order-success"; // 成功頁面
+            return "redirect:/orders/" + order.getId();
         } catch (RuntimeException e) {
             model.addAttribute("error", e.getMessage());
             return "cart"; // 回到購物車頁面顯示錯誤
@@ -101,7 +112,7 @@ public class OrderController {
         if (order == null || !order.getCustomer().getId().equals(customer.getId())) {
             return "redirect:/orders";
         }
-
+        
         model.addAttribute("order", order);
         return "order-detail";
     }

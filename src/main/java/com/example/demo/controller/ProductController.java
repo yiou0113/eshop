@@ -1,8 +1,11 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Category;
+import com.example.demo.model.Customer;
 import com.example.demo.model.Product;
+import com.example.demo.model.User;
 import com.example.demo.service.CategoryService;
+import com.example.demo.service.CustomerService;
 import com.example.demo.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+
+import javax.servlet.http.HttpSession;
 
 /**
  * 商品相關的 Controller
@@ -30,6 +35,8 @@ public class ProductController {
 	private ProductService productService;
 	@Autowired
 	private CategoryService categoryService;
+	@Autowired
+	private CustomerService customerService;
 
 	/**
 	 * 顯示商品列表（支援分頁）
@@ -43,7 +50,7 @@ public class ProductController {
 	 */
 	@GetMapping
 	public String listProducts(@RequestParam(defaultValue = "1") int page,
-			@RequestParam(required = false) Long categoryId, Model model) {
+			@RequestParam(required = false) Long categoryId,HttpSession session, Model model) {
 		int pageSize = 12; // 每頁幾筆
 		int totalProducts;
 		List<Product> products;
@@ -65,7 +72,15 @@ public class ProductController {
 
 		// 用三層分類結構
 		List<Category> categoryTree = categoryService.getThreeLevelCategories();
-
+		
+		User user = (User) session.getAttribute("loggedInUser");
+	    Customer customer = null;
+	    if (user != null) {
+	        // 若使用者已登入，才嘗試查詢 customer
+	        customer = customerService.getCustomerByUserId(user.getId());
+	        model.addAttribute("customer", customer);
+	    }
+		
 		model.addAttribute("products", products);
 		model.addAttribute("currentPage", page);
 		model.addAttribute("totalPages", totalPages);
