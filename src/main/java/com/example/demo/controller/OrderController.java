@@ -154,11 +154,11 @@ public class OrderController {
         User user = (User) userDetails.getUser();
         Customer customer = customerService.getCustomerByUserId(user.getId());
         Order order = orderService.getOrderById(id);
-
+        
         if (order == null || !order.getCustomer().getId().equals(customer.getId())) {
             return "redirect:/orders";
         }
-
+        
         orderService.cancelOrder(order.getId());
         model.addAttribute("message", "訂單已取消");
         return "redirect:/orders";

@@ -171,7 +171,12 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public void cancelOrder(Long orderId) {
 		Order order = getOrderById(orderId);
-
+		for(OrderItem item : order.getItems()) {
+			Product product = item.getProduct();
+			int newStock = product.getStock() + item.getQuantity();
+			product.setStock(newStock);
+			productDAO.save(product);
+		}
 		order.setStatus("訂單取消");
 		orderDAO.save(order); // 或使用 Hibernate session.update(order)
 	}
