@@ -23,61 +23,9 @@ import com.example.demo.service.AuthService;
  */
 @Controller
 public class LoginController {
-
-	/** 注入 AuthService，負責使用者驗證邏輯 */
-	@Autowired
-	private AuthService authService;
-
-	/**
-	 * 顯示登入表單
-	 *
-	 * @return 導向 login.html
-	 */
 	@GetMapping("/login")
-	public String showLoginForm(Model model) {
-	    if (!model.containsAttribute("loginDTO")) {
-	        model.addAttribute("loginDTO", new LoginDTO());
-	    }
-	    return "login"; // 對應 login.html
-	}
+    public String login() {
+        return "login"; // 對應 src/main/webapp/WEB-INF/views/login.html
+    }
 
-	/**
-	 * 處理登入請求，並核對信箱密碼
-	 * @param dto 判斷輸入資料格式正確性
-	 * @param result 接收dto的錯誤訊息
-	 * @param session HttpSession，用於取得已登入使用者
-	 * @param redirectAttrs 用於給予錯誤訊息
-	 * @return
-	 */
-	@PostMapping("/login")
-	public String login(@Valid @ModelAttribute("loginDTO") LoginDTO dto, BindingResult result, HttpSession session,
-			RedirectAttributes redirectAttrs) {
-		if (result.hasErrors()) {
-			redirectAttrs.addFlashAttribute("error", result.getAllErrors().get(0).getDefaultMessage());
-			return "redirect:/login";
-		}
-
-		User user = authService.login(dto.getEmail(), dto.getPassword());
-		if (user == null) {
-			redirectAttrs.addFlashAttribute("error", "Email 或密碼錯誤");
-			return "redirect:/login";
-		}
-
-		session.setAttribute("loggedInUser", user);
-		return "redirect:/products";
-	}
-
-	/**
-	 * 處理登出請求
-	 *
-	 * 清除 Session 以結束登入狀態，並重新導回登入頁。
-	 *
-	 * @param session 當前使用者 Session
-	 * @return 導向 products
-	 */
-	@GetMapping("/logout")
-	public String logout(HttpSession session) {
-		session.invalidate();// 清空 Session
-		return "redirect:/products";
-	}
 }

@@ -2,11 +2,13 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Order;
 import com.example.demo.model.User;
+import com.example.demo.security.CustomUserDetails;
 import com.example.demo.model.Customer;
 import com.example.demo.service.CustomerService;
 import com.example.demo.service.OrderService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -48,8 +50,8 @@ public class OrderController {
      * @return 返回訂單頁面
      */
     @GetMapping
-    public String viewOrders(HttpSession session, Model model) {
-    	User user = (User) session.getAttribute("loggedInUser");
+    public String viewOrders(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
+    	User user=(User) userDetails.getUser();
         Customer customer = customerService.getCustomerByUserId(user.getId());
         List<Order> orders = orderService.getOrderByCustomerId(customer.getId());
         if (orders.isEmpty()) {
@@ -70,8 +72,8 @@ public class OrderController {
      * @return 返回成功頁面
      */
     @PostMapping("/create")
-    public String createOrder(@RequestParam(value="selectedProducts", required=false) List<Long> selectedProductIds,HttpSession session, Model model) {
-    	User user = (User) session.getAttribute("loggedInUser");
+    public String createOrder(@AuthenticationPrincipal CustomUserDetails userDetails,@RequestParam(value="selectedProducts", required=false) List<Long> selectedProductIds,HttpSession session, Model model) {
+    	User user = (User) userDetails.getUser();
         Customer customer = customerService.getCustomerByUserId(user.getId());
 
         // 如果沒有選擇任何商品
@@ -105,8 +107,8 @@ public class OrderController {
      * @return 返回訂單詳情頁面 "order-detail"，或訂單不屬於該客戶時導向 "/orders"
      */
     @GetMapping("/{id}")
-    public String viewOrderDetail(@PathVariable("id") Long id, HttpSession session, Model model) {
-    	User user = (User) session.getAttribute("loggedInUser");
+    public String viewOrderDetail(@AuthenticationPrincipal CustomUserDetails userDetails,@PathVariable("id") Long id, HttpSession session, Model model) {
+    	User user = (User) userDetails.getUser();
         Customer customer = customerService.getCustomerByUserId(user.getId());
         Order order = orderService.getOrderById(id);
         if (order == null || !order.getCustomer().getId().equals(customer.getId())) {
@@ -124,8 +126,8 @@ public class OrderController {
      * @return 訂單成立後返回訂單列表
      */
     @PostMapping("/{id}/pay")
-    public String payOrder(@PathVariable("id") Long id, HttpSession session, Model model) {
-        User user = (User) session.getAttribute("loggedInUser");
+    public String payOrder(@AuthenticationPrincipal CustomUserDetails userDetails,@PathVariable("id") Long id, HttpSession session, Model model) {
+        User user = (User) userDetails.getUser();
         Customer customer = customerService.getCustomerByUserId(user.getId());
         Order order = orderService.getOrderById(id);
 
@@ -148,8 +150,8 @@ public class OrderController {
      * @return 訂單取消後返回訂單列表
      */
     @PostMapping("/{id}/cancel")
-    public String cancelOrder(@PathVariable("id") Long id, HttpSession session, Model model) {
-        User user = (User) session.getAttribute("loggedInUser");
+    public String cancelOrder(@AuthenticationPrincipal CustomUserDetails userDetails,@PathVariable("id") Long id, HttpSession session, Model model) {
+        User user = (User) userDetails.getUser();
         Customer customer = customerService.getCustomerByUserId(user.getId());
         Order order = orderService.getOrderById(id);
 

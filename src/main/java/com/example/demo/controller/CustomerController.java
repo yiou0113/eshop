@@ -1,8 +1,10 @@
 package com.example.demo.controller;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.demo.model.Customer;
 import com.example.demo.model.User;
+import com.example.demo.security.CustomUserDetails;
 import com.example.demo.service.CustomerService;
 /**
  * CustomerController 負責處理客戶相關的顯示頁面與操作
@@ -38,8 +41,8 @@ public class CustomerController {
 	 * @return	回傳道customer-profile頁面
 	 */
 	@GetMapping("/account/profile")
-	public String customerProfile(HttpSession session, Model model) {
-		User user = (User) session.getAttribute("loggedInUser");
+	public String customerProfile(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
+		User user = (User) userDetails.getUser();
 		Customer customer = customerService.getCustomerByUserId(user.getId());
 		model.addAttribute("customer", customer);
 		model.addAttribute("user", user);
@@ -65,9 +68,9 @@ public class CustomerController {
 	 * @return	導回修改密碼頁面
 	 */
 	@PostMapping("/verify/password")
-	public String verifyPassword(@RequestParam("password") String password, HttpSession session,
+	public String verifyPassword(@AuthenticationPrincipal CustomUserDetails userDetails,@RequestParam("password") String password,HttpSession session, 
 			RedirectAttributes redirectAttributes) {
-		User user = (User) session.getAttribute("loggedInUser");
+		User user = (User) userDetails.getUser();
 		if (user == null) {
 			return "redirect:/login";
 		}
@@ -102,10 +105,10 @@ public class CustomerController {
 	 * @return	導回個人資訊頁面
 	 */
 	@PostMapping("/account/password")
-	public String changePassword(@RequestParam("password") String password, HttpSession session,
+	public String changePassword(@AuthenticationPrincipal CustomUserDetails userDetails,@RequestParam("password") String password, HttpSession session,
 			RedirectAttributes redirectAttributes) {
 
-		User user = (User) session.getAttribute("loggedInUser");
+		User user = (User) userDetails.getUser();
 		if (user == null) {
 			return "redirect:/login";
 		}
@@ -141,9 +144,9 @@ public class CustomerController {
 	 * @return	導回個人資訊頁面
 	 */
 	@PostMapping("/update")
-	public String updateUser(@ModelAttribute("customer") Customer customer, HttpSession session,
-			RedirectAttributes redirectAttributes) {
-		User user = (User) session.getAttribute("loggedInUser");
+	public String updateUser(@AuthenticationPrincipal CustomUserDetails userDetails,@ModelAttribute("customer") Customer customer, 
+			RedirectAttributes redirectAttributes,HttpServletRequest request) {
+		User user = (User) userDetails.getUser();
 		customerService.updateCustomerInfo(user.getId(), customer);
 		redirectAttributes.addFlashAttribute("message", "更新成功！");
 		return "redirect:/user/account/profile";

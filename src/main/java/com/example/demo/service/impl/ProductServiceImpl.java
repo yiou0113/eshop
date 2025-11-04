@@ -70,68 +70,22 @@ public class ProductServiceImpl implements ProductService {
 		productDAO.delete(id);
 	}
 
-	/**
-	 * 分頁取得商品清單
-	 *
-	 * @param page 目前頁碼（從 1 開始）
-	 * @param size 每頁顯示的商品數量
-	 * @return List<Product> 該頁的商品列表
-	 */
 	@Override
-	public List<Product> getProductsByPage(int page, int size) {
-		return productDAO.findPaginated(page, size);
-	}
-	
-	/**
-	 * 透過分類找出商品
-	 * 
-	 * @param categoryId	使用者目前選取的類別
-	 * @param page	目前頁碼 (從 1 開始)
-	 * @param size	每頁顯示的商品數量
-	 * @return List<Product> 該頁的商品列表
-	 */
-	@Override
-	public List<Product> getProductsByCategory(Long categoryId, int page, int size) {
-	    if (categoryId == null) {
-	        return List.of();
+	public List<Product> searchProductsByNameAndCategoryWithPage(String keyword, Long categoryId, int page, int pageSize) {
+	    List<Long> categoryIds = null;
+	    if (categoryId != null) {
+	        categoryIds = categoryService.getAllChildCategoryIds(categoryId);
 	    }
-	    List<Long> categoryIds = categoryService.getAllChildCategoryIds(categoryId);
-	    return productDAO.findByCategoryIds(categoryIds, page, size);
+	    return productDAO.searchProductsByNameAndCategoryWithPage(keyword, categoryIds, page, pageSize);
 	}
-	/**
-	 * 計算該類別的總商品術
-	 * 
-	 * @param categoryId	使用者目前選取的類別
-	 * @return	該分類總商品數
-	 */
+
 	@Override
-	public int countProductsByCategory(Long categoryId) {
-	    if (categoryId == null) {
-	        return 0;
+	public int countProductsByNameAndCategory(String keyword, Long categoryId) {
+	    List<Long> categoryIds = null;
+	    if (categoryId != null) {
+	        categoryIds = categoryService.getAllChildCategoryIds(categoryId);
 	    }
-	    List<Long> categoryIds = categoryService.getAllChildCategoryIds(categoryId);
-	    return productDAO.countByCategoryIds(categoryIds);
+	    return productDAO.countProductsByNameAndCategory(keyword, categoryIds);
 	}
-	/**
-	 * 透過關鍵字找出商品
-	 * 
-	 * @param keyword	使用者輸入的關鍵字
-	 * @param page	目前頁碼 (從 1 開始)
-	 * @param size	每頁顯示的商品數量
-	 * @return	List<Product> 該頁的商品列表
-	 */
-	@Override
-	public List<Product> searchProductsByNameWithPage(String keyword, int page, int size) {
-	    return productDAO.searchProductsByName(keyword, page, size);
-	}
-	/**
-	 * 計算關鍵字找出的商品總數
-	 * 
-	 * @param keyword	使用者目前輸入的關鍵字
-	 * @return	該關鍵字商品總數
-	 */
-	@Override
-	public int countProductsByName(String keyword) {
-	    return productDAO.countProductsByName(keyword);
-	}
+
 }

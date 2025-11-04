@@ -34,11 +34,11 @@ table {
 <body>
 	<div>
 		<div class="container mt-3">
-			<div th:if="${message}" id="flashMessage" class="alert alert-success"
+			<div th:if="${message}" id="flashMessageSuccess" class="alert alert-success"
 				role="alert">
 				<span th:text="${message}"></span>
 			</div>
-			<div th:if="${error}" id="flashMessage" class="alert alert-danger"
+			<div th:if="${error}" id="flashMessageError" class="alert alert-danger"
 				role="alert">
 				<span th:text="${error}"></span>
 			</div>
@@ -104,7 +104,9 @@ table {
 
 		<div class="text-center mt-3 d-flex justify-content-center gap-2">
 			<!-- 結帳按鈕掛到外部 form -->
-			<button type="submit" form="orderForm" class="btn btn-success">結帳並建立訂單</button>
+			<button type="submit" form="orderForm" class="btn btn-success"
+        th:disabled="${isEmpty}">結帳並建立訂單</button>
+
 
 			<!-- 返回商品列表按鈕 -->
 			<form th:action="@{/products}" method="get" class="m-0">
@@ -116,8 +118,16 @@ table {
 
 	<script>
     // 取得 alert 元素
-    const flash = document.getElementById('flashMessage');
-    if (flash) {
+    const flashSuccess = document.getElementById('flashMessageSuccess');
+    if (flashSuccess) {
+        setTimeout(() => {
+            flash.style.transition = 'opacity 0.5s ease';
+            flash.style.opacity = '0';
+            setTimeout(() => flash.remove(), 500);
+        }, 2500);
+    }
+    const flashError = document.getElementById('flashMessageError');
+    if (flashError) {
         setTimeout(() => {
             flash.style.transition = 'opacity 0.5s ease';
             flash.style.opacity = '0';

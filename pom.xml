@@ -44,6 +44,21 @@
 			<version>5.8.11</version>
 		</dependency>
 
+		<!-- Spring Security Web 模組，包含 SecurityFilterChain -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>5.8.11</version>
+		</dependency>
+
+		<!-- Spring Security Config 模組，包含 HttpSecurity -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>5.8.11</version>
+		</dependency>
+
+
 		<!-- Spring 測試整合 -->
 		<dependency>
 			<groupId>org.springframework</groupId>

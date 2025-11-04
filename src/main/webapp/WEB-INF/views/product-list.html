@@ -3,142 +3,123 @@
 <head>
 <meta charset="UTF-8">
 <title>Product List</title>
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
-	rel="stylesheet">
-
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
 .card-img-top {
-	width: 100%; /* 寬度填滿卡片 */
-	height: 250px; /* 統一高度 */
-	object-fit: cover; /* 保持比例、裁切超出部分 */
-	border-top-left-radius: 0.5rem; /* 視覺一致 */
-	border-top-right-radius: 0.5rem;
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
 }
 </style>
-
 </head>
-
 <body>
-	<div class="container mt-3 d-flex justify-content-end align-items-center gap-2">
+<div class="container mt-3 d-flex justify-content-end align-items-center gap-2">
     <span th:if="${customer != null}" class="me-2">
         👋 歡迎，<span th:text="${customer.name}">使用者</span>
     </span>
-
-    <a th:if="${customer == null}" th:href="@{/login}" class="btn btn-outline-primary">
-        🧍🏻 登入
-    </a>
-    <a th:if="${customer != null}" th:href="@{/logout}" class="btn btn-outline-danger">
-        🚪 登出
-    </a>
-
+    <form th:if="${customer != null}" th:action="@{/logout}" method="post">
+        <button type="submit" class="btn btn-outline-danger">🚪 登出</button>
+    </form>
+    <a th:unless="${customer != null}" th:href="@{/login}" class="btn btn-outline-primary">🔑 登入</a>
     <a th:href="@{/user/account/profile}" class="btn btn-primary">🧍🏻 我的帳戶</a>
     <a th:href="@{/cart}" class="btn btn-success">🛒 購物車</a>
     <a th:href="@{/orders}" class="btn btn-info">📄 我的訂單</a>
 </div>
 
+<div class="container mt-5">
+    <!-- Flash message -->
+    <div th:if="${message}" id="flashMessageSuccess" class="alert alert-success" role="alert">
+        <span th:text="${message}"></span>
+    </div>
+    <div th:if="${error}" id="flashMessageError" class="alert alert-danger" role="alert">
+        <span th:text="${error}"></span>
+    </div>
 
-	<div class="container mt-5">
-		<div th:if="${message}" id="flashMessage" class="alert alert-success"
-			role="alert">
-			<span th:text="${message}"></span>
-		</div>
-		<div th:if="${error}" id="flashMessage" class="alert alert-danger"
-			role="alert">
-			<span th:text="${error}"></span>
-		</div>
-		<form th:action="@{/products/search}" method="get" class="mb-3">
-			<input type="text" name="keyword" th:value="${keyword}"
-				placeholder="搜尋商品名稱" />
-			<button type="submit">搜尋</button>
-		</form>
-		<div class="container mt-5"></div>
-		<form method="get" th:action="@{/products}">
-			<select id="categorySelect" name="categoryId" class="form-select"
-				onchange="this.form.submit()">
-				<option value="" th:selected="${selectedCategoryId == null}">全部商品</option>
+    <!-- 搜尋表單 -->
+    <form th:action="@{/products}" method="get" class="mb-3 d-flex gap-2">
+        <input type="text" name="keyword" th:value="${keyword}" placeholder="搜尋商品名稱" class="form-control" />
+        <input type="hidden" name="categoryId" th:value="${selectedCategoryId}" />
+        <button type="submit" class="btn btn-primary">搜尋</button>
+    </form>
 
-				<!-- 大分類 -->
-				<th:block th:each="top : ${categoryTree}">
-					<option th:value="${top.id}"
-						th:selected="${selectedCategoryId == top.id}"
-						th:text="${top.name}"></option>
+    <!-- 分類選單 -->
+    <form method="get" th:action="@{/products}" class="mb-4">
+        <input type="hidden" name="keyword" th:value="${keyword}" />
+        <select id="categorySelect" name="categoryId" class="form-select" onchange="this.form.submit()">
+            <option value="" th:selected="${selectedCategoryId == null}">全部商品</option>
+            <th:block th:each="top : ${categoryTree}">
+                <option th:value="${top.id}" th:selected="${selectedCategoryId == top.id}" th:text="${top.name}"></option>
+                <th:block th:each="mid : ${top.children}">
+                    <option th:value="${mid.id}" th:selected="${selectedCategoryId == mid.id}" th:text="'-- ' + ${mid.name}"></option>
+                    <th:block th:each="small : ${mid.children}">
+                        <option th:value="${small.id}" th:selected="${selectedCategoryId == small.id}" th:text="'---- ' + ${small.name}"></option>
+                    </th:block>
+                </th:block>
+            </th:block>
+        </select>
+    </form>
 
-					<!-- 中分類 -->
-					<th:block th:each="mid : ${top.children}">
-						<option th:value="${mid.id}"
-							th:selected="${selectedCategoryId == mid.id}"
-							th:text="'-- ' + ${mid.name}"></option>
+    <!-- 商品列表 -->
+    <h2 class="mb-4">Product List</h2>
+    <div class="row">
+        <div class="col-md-4 mb-4" th:each="product : ${products}">
+            <div class="card">
+                <a th:href="@{/products/{id}(id=${product.id})}">
+                    <img th:src="@{${product.imageUrl}}" class="card-img-top" alt="Product Image">
+                </a>
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${product.name}"></h5>
+                    <p class="card-text">
+                        <span th:text="'NT$ ' + ${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')}"></span>
+                    </p>
+                    <form th:action="@{/cart/add}" method="post" class="d-inline mt-2">
+                        <input type="hidden" name="productId" th:value="${product.id}">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" class="btn btn-primary">加入購物車</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
-						<!-- 小分類 -->
-						<th:block th:each="small : ${mid.children}">
-							<option th:value="${small.id}"
-								th:selected="${selectedCategoryId == small.id}"
-								th:text="'---- ' + ${small.name}"></option>
-						</th:block>
-					</th:block>
-				</th:block>
-			</select>
-		</form>
+    <!-- 分頁 -->
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/products(page=${currentPage-1}, keyword=${keyword}, categoryId=${selectedCategoryId})}">Previous</a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}" th:classappend="${i == currentPage} ? 'active'">
+                <a class="page-link" th:href="@{/products(page=${i}, keyword=${keyword}, categoryId=${selectedCategoryId})}" th:text="${i}"></a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/products(page=${currentPage+1}, keyword=${keyword}, categoryId=${selectedCategoryId})}">Next</a>
+            </li>
+        </ul>
+    </nav>
+</div>
 
-
-
-		<h2 class="mb-4">Product List</h2>
-		<div class="row">
-			<div class="col-md-4 mb-4" th:each="product : ${products}">
-				<div class="card">
-					<a th:href="@{/products/{id}(id=${product.id})}"> <img
-						th:src="@{${product.imageUrl}}" class="card-img-top"
-						alt="Product Image">
-					</a>
-					<div class="card-body">
-						<h5 class="card-title" th:text="${product.name}"></h5>
-						<p class="card-text">
-							<span
-								th:text="'NT$ ' + ${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')}"></span>
-						</p>
-						<form th:action="@{/cart/add}" method="post" class="d-inline mt-2">
-							<input type="hidden" name="productId" th:value="${product.id}">
-							<input type="hidden" name="quantity" value="1">
-							<button type="submit" class="btn btn-primary">加入購物車</button>
-						</form>
-
-					</div>
-				</div>
-			</div>
-		</div>
-		<!-- 分頁 -->
-		<nav aria-label="Page navigation example">
-			<ul class="pagination justify-content-center">
-				<li class="page-item"
-					th:classappend="${currentPage == 1} ? 'disabled'"><a
-					class="page-link" th:href="@{/products(page=${currentPage-1})}">Previous</a>
-				</li>
-
-				<li class="page-item"
-					th:each="i : ${#numbers.sequence(1, totalPages)}"
-					th:classappend="${i == currentPage} ? 'active'"><a
-					class="page-link" th:href="@{/products(page=${i})}" th:text="${i}"></a>
-				</li>
-
-				<li class="page-item"
-					th:classappend="${currentPage == totalPages} ? 'disabled'"><a
-					class="page-link" th:href="@{/products(page=${currentPage+1})}">Next</a>
-				</li>
-			</ul>
-		</nav>
-	</div>
-</body>
 <script>
-    // 取得 alert 元素
-    const flash = document.getElementById('flashMessage');
-    if (flash) {
-        // 3 秒後淡出
+    // Flash message 自動淡出
+    const flashSucess = document.getElementById('flashMessageSucess');
+    if (flashSucess) {
         setTimeout(() => {
             flash.style.transition = 'opacity 0.5s ease';
             flash.style.opacity = '0';
-            setTimeout(() => flash.remove(), 500); // 0.5 秒後移除
-        }, 2500); // 顯示時間
+            setTimeout(() => flash.remove(), 500);
+        }, 2500);
+    }
+    const flashError = document.getElementById('flashMessageError');
+    if (flashError) {
+        setTimeout(() => {
+            flash.style.transition = 'opacity 0.5s ease';
+            flash.style.opacity = '0';
+            setTimeout(() => flash.remove(), 500);
+        }, 2500);
     }
 </script>
+</body>
 </html>

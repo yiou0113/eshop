@@ -7,8 +7,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -25,8 +23,6 @@ import org.thymeleaf.templatemode.TemplateMode;
 @EnableWebMvc
 @ComponentScan(basePackages = "com.example.demo") 
 public class WebMvcConfig implements WebMvcConfigurer {
-	@Autowired
-    private AuthInterceptor authInterceptor;
 	@Autowired
     private CustomerInterceptor customerInterceptor;
     @Bean
@@ -56,11 +52,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
         return viewResolver;
     }
     
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/resources/**")
@@ -95,14 +86,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
-        
-        registry.addInterceptor(authInterceptor)
-        .addPathPatterns("/**")       // 所有路徑都攔截
-        .excludePathPatterns("/login", "/css/**", "/js/**","/products/**","/","/password/**","/logout","/users/**","/register"); // 排除不需登入的路徑
-        
+            
         registry.addInterceptor(customerInterceptor)
         .addPathPatterns("/cart/**", "/order/**", "/user/**"); // 只有需要會員資料的功能
     }
-    
+
     
 }

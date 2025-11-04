@@ -3,16 +3,17 @@ package com.example.demo.controller;
 import com.example.demo.model.Cart;
 import com.example.demo.model.Customer;
 import com.example.demo.model.User;
+import com.example.demo.security.CustomUserDetails;
 import com.example.demo.service.CartService;
 import com.example.demo.service.CustomerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.servlet.http.HttpSession;
 /**
  * CartController 負責處理與購物車相關的頁面顯示與操作。
  * 包含：
@@ -39,9 +40,10 @@ public class CartController {
      * @return         回傳到 cart.html 顯示購物車畫面
      */
 	@GetMapping
-	public String viewCart(HttpSession session, Model model) {
+	public String viewCart(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
 		// 從 Session 取得目前登入的使用者	
-		User user = (User) session.getAttribute("loggedInUser");
+		
+		User user = (User) userDetails.getUser();
 		// 根據使用者 ID 查找對應的顧客資料
 		Customer customer = customerSecvice.getCustomerByUserId(user.getId());
 		if (customer == null) {
@@ -71,9 +73,9 @@ public class CartController {
      * @return	導回產品列表頁面
      */
 	@PostMapping("/add")
-	public String addToCart(@RequestParam Long productId, @RequestParam int quantity, HttpSession session,RedirectAttributes redirectAttributes) {
+	public String addToCart(@AuthenticationPrincipal CustomUserDetails userDetails,@RequestParam Long productId, @RequestParam int quantity, RedirectAttributes redirectAttributes) {
 		// 從 Session 取得目前登入的使用者
-		User user = (User) session.getAttribute("loggedInUser");
+		User user = (User) userDetails.getUser();
 		// 根據使用者 ID 查找對應的顧客資料
 		Customer customer = customerSecvice.getCustomerByUserId(user.getId());
 		//判斷購買數量是否符合庫存
@@ -98,10 +100,10 @@ public class CartController {
      */
 	// 更新商品數量
 	@PostMapping("/update")
-	public String updateQuantity(@RequestParam("productId") Long productId, @RequestParam("quantity") int quantity,
-			HttpSession session,RedirectAttributes redirectAttributes) {
+	public String updateQuantity(@AuthenticationPrincipal CustomUserDetails userDetails,@RequestParam("productId") Long productId, @RequestParam("quantity") int quantity,
+			RedirectAttributes redirectAttributes) {
 		// 從 Session 取得目前登入的使用者
-		User user = (User) session.getAttribute("loggedInUser");
+		User user = (User) userDetails.getUser();
 		// 根據使用者 ID 查找對應的顧客資料
 		Customer customer = customerSecvice.getCustomerByUserId(user.getId());
 		//判斷購買數量是否符合庫存
@@ -123,9 +125,9 @@ public class CartController {
      * @return 導回購物車頁面
      */
 	@PostMapping("/remove")
-	public String removeItem(@RequestParam("productId") Long productId, HttpSession session) {
+	public String removeItem(@AuthenticationPrincipal CustomUserDetails userDetails,@RequestParam("productId") Long productId) {
 		// 從 Session 取得目前登入的使用者
-		User user = (User) session.getAttribute("loggedInUser");
+		User user = (User) userDetails.getUser();
 		// 根據使用者 ID 查找對應的顧客資料
 		Customer customer = customerSecvice.getCustomerByUserId(user.getId());
 		cartService.removeItem(customer.getId(), productId);

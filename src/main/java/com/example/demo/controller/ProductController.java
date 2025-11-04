@@ -4,10 +4,12 @@ import com.example.demo.model.Category;
 import com.example.demo.model.Customer;
 import com.example.demo.model.Product;
 import com.example.demo.model.User;
+import com.example.demo.security.CustomUserDetails;
 import com.example.demo.service.CategoryService;
 import com.example.demo.service.CustomerService;
 import com.example.demo.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,15 +19,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-import javax.servlet.http.HttpSession;
 
 /**
  * 商品相關的 Controller
  *
- * 此控制器負責處理商品列表與商品詳細資訊的展示。 
- * 包含： 
- * - 商品列表（分頁顯示） 
- * - 商品詳細頁面
+ * 此控制器負責處理商品列表與商品詳細資訊的展示。 包含： - 商品列表（分頁顯示） - 商品詳細頁面
  */
 @Controller
 @RequestMapping("/products")
@@ -43,49 +41,42 @@ public class ProductController {
 	 *
 	 * 當使用者訪問 /products 時，會顯示商品列表頁面， 每頁顯示固定數量(目前設定為12)的商品，並計算總頁數。
 	 *
-	 * @param page  目前頁碼，預設為 1
-	 * @param categoryId	目前選取分類
-	 * @param model 用於傳遞資料到前端
+	 * @param page       目前頁碼，預設為 1
+	 * @param categoryId 目前選取分類
+	 * @param model      用於傳遞資料到前端
 	 * @return 返回商品列表的模板名稱 "product-list" 對應 product-list.html
 	 */
 	@GetMapping
-	public String listProducts(@RequestParam(defaultValue = "1") int page,
-			@RequestParam(required = false) Long categoryId,HttpSession session, Model model) {
+	public String listProducts(@AuthenticationPrincipal CustomUserDetails userDetails,
+			@RequestParam(defaultValue = "1") int page, @RequestParam(required = false) Long categoryId,@RequestParam(value = "keyword", required = false) String keyword,
+			 Model model) {
 		int pageSize = 12; // 每頁幾筆
-		int totalProducts;
-		List<Product> products;
+		List<Product> products = productService.searchProductsByNameAndCategoryWithPage(keyword, categoryId, page, pageSize);
+		int totalProducts = productService.countProductsByNameAndCategory(keyword, categoryId);
 		
-		if (categoryId != null) {
-			// 依選定分類查詢商品
-			products = productService.getProductsByCategory(categoryId, page, pageSize);
-			totalProducts = productService.countProductsByCategory(categoryId);
-		} else {
-			// 查詢所有商品
-			products = productService.getProductsByPage(page, pageSize);
-			totalProducts = productService.getAllProducts().size();
-		}
-
 		int totalPages = (int) Math.ceil((double) totalProducts / pageSize);
-	    if (totalPages == 0) {
-	        totalPages = 1;
-	    }
+		if (totalPages == 0) {
+			totalPages = 1;
+		}
+		
 
 		// 用三層分類結構
 		List<Category> categoryTree = categoryService.getThreeLevelCategories();
-		
-		User user = (User) session.getAttribute("loggedInUser");
-	    Customer customer = null;
-	    if (user != null) {
-	        // 若使用者已登入，才嘗試查詢 customer
-	        customer = customerService.getCustomerByUserId(user.getId());
-	        model.addAttribute("customer", customer);
-	    }
-		
+		if (userDetails != null) {
+			User user = userDetails.getUser();
+			Customer customer = null;
+			if (user != null) {
+				// 若使用者已登入，才嘗試查詢 customer
+				customer = customerService.getCustomerByUserId(user.getId());
+				model.addAttribute("customer", customer);
+			}
+		}
 		model.addAttribute("products", products);
 		model.addAttribute("currentPage", page);
 		model.addAttribute("totalPages", totalPages);
 		model.addAttribute("categoryTree", categoryTree);
 		model.addAttribute("selectedCategoryId", categoryId);
+		model.addAttribute("keyword", keyword); // 必須加，讓搜尋欄能顯示 keyword
 		return "product-list";
 	}
 
@@ -103,41 +94,5 @@ public class ProductController {
 		Product product = productService.getProductById(id);
 		model.addAttribute("product", product);
 		return "product-detail";
-	}
-	/**
-	 * 顯示使用者輸入關鍵字相關商品
-	 * 
-	 * @param keyword	使用者輸入的關鍵字
-	 * @param page	目前頁碼，預設為 1
-	 * @param model	用於傳遞資料到前端
-	 * @return	返回商品詳細頁面
-	 */
-	@GetMapping("/search")
-	public String searchProducts(@RequestParam(value = "keyword", required = false) String keyword,
-	        @RequestParam(defaultValue = "1") int page, Model model) {
-		 int pageSize = 12;
-		List<Product> products;
-		int totalProducts;
-		if (keyword == null || keyword.trim().isEmpty()) {
-	        // 沒輸入關鍵字 → 顯示全部商品
-	        products = productService.getProductsByPage(page, pageSize);
-	        totalProducts = productService.getAllProducts().size();
-	    } else {
-	        // 搜尋商品名稱
-	        products = productService.searchProductsByNameWithPage(keyword, page, pageSize);
-	        totalProducts = productService.countProductsByName(keyword);
-	        if (products.isEmpty()) {
-	            model.addAttribute("message", "無搜尋結果");
-	        }
-	    }
-
-	    int totalPages = (int) Math.ceil((double) totalProducts / pageSize);
-	    if (totalPages == 0) totalPages = 1;
-	    
-	    model.addAttribute("products", products);
-	    model.addAttribute("keyword", keyword);
-	    model.addAttribute("currentPage", page);
-	    model.addAttribute("totalPages", totalPages);
-		return "product-list"; // 導回商品列表頁面
 	}
 }

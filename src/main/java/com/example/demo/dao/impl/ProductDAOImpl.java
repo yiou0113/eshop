@@ -27,95 +27,7 @@ import java.util.List;
  */
 @Repository
 public class ProductDAOImpl extends BaseDAOImpl<Product> implements ProductDAO {
-	/**
-     * 分頁查詢所有商品。
-     *
-     * @param page 當前頁碼（從 1 開始）
-     * @param size 每頁顯示筆數
-     * @return 商品列表
-     */
-	@Override
-	public List<Product> findPaginated(int page, int size) {
-		return getCurrentSession()
-				.createQuery("FROM Product", Product.class)
-				.setFirstResult((page - 1) * size) // 計算從哪一筆開始
-				.setMaxResults(size) // 每頁顯示多少筆
-				.list();
-	}
-	/**
-     * 根據分類 ID 列表分頁查詢商品。
-     *
-     * @param categoryIds 分類 ID 列表
-     * @param page 當前頁碼（從 1 開始）
-     * @param size 每頁顯示筆數
-     * @return 商品列表；若 categoryIds 為 null 則回傳空集合
-     */
-	@Override
-	public List<Product> findByCategoryIds(List<Long> categoryIds, int page, int size) {
-	    if (categoryIds == null) {
-	        return List.of();
-	    }
-	    return getCurrentSession()
-	            .createQuery("FROM Product p WHERE p.category.id IN :ids", Product.class)
-	            .setParameter("ids", categoryIds)
-	            .setFirstResult((page - 1) * size)
-	            .setMaxResults(size)
-	            .list();
-	}
-	/**
-     * 計算指定分類 ID 列表的商品總數。
-     *
-     * @param categoryIds 分類 ID 列表
-     * @return 商品數量；若 categoryIds 為 null 則回傳 0
-     */
-	@Override
-	public int countByCategoryIds(List<Long> categoryIds) {
-	    if (categoryIds == null) {
-	        return 0;
-	    }
-	    Long count = getCurrentSession()
-	            .createQuery("SELECT COUNT(p.id) FROM Product p WHERE p.category.id IN :ids", Long.class)
-	            .setParameter("ids", categoryIds)
-	            .uniqueResult();
-	    return count != null ? count.intValue() : 0;
-	}
-	/**
-     * 根據關鍵字搜尋商品名稱並分頁。
-     *
-     * @param keyword 搜尋關鍵字
-     * @param page 當前頁碼（從 1 開始）
-     * @param size 每頁顯示筆數
-     * @return 符合條件的商品列表；若 keyword 為 null 或空字串則查詢所有商品
-     */
-	@Override
-	public List<Product> searchProductsByName(String keyword, int page, int size){
-		if (keyword == null || keyword.trim().isEmpty()) {
-            return getCurrentSession()
-            		.createQuery("FROM Product", Product.class)
-                    .getResultList();
-        }
 
-        return getCurrentSession()
-        		.createQuery("FROM Product p WHERE LOWER(p.name) LIKE :keyword", Product.class)
-                .setParameter("keyword", "%" + keyword.toLowerCase() + "%")
-                .setFirstResult((page - 1) * size)
-	            .setMaxResults(size)
-                .getResultList();
-    }
-	/**
-     * 計算符合關鍵字的商品數量。
-     *
-     * @param keyword 搜尋關鍵字
-     * @return 商品數量
-     */
-	@Override
-	public int countProductsByName(String keyword) {
-	    Long count = getCurrentSession()
-	            .createQuery("SELECT COUNT(p.id) FROM Product p WHERE LOWER(p.name) LIKE LOWER(:keyword)", Long.class)
-	            .setParameter("keyword", "%" + keyword + "%")
-	            .uniqueResult();
-	    return count != null ? count.intValue() : 0;
-	}
 	/**
      * 扣減指定商品的庫存。
      *
@@ -137,4 +49,54 @@ public class ProductDAOImpl extends BaseDAOImpl<Product> implements ProductDAO {
 
 	    return updated > 0; // >0 表示扣成功
 	}
+	@Override
+	public List<Product> searchProductsByNameAndCategoryWithPage(String keyword, List<Long> categoryIds, int page, int pageSize) {
+	    StringBuilder hql = new StringBuilder("FROM Product p WHERE 1=1");
+
+	    if (keyword != null && !keyword.trim().isEmpty()) {
+	        hql.append(" AND p.name LIKE :keyword");
+	    }
+	    if (categoryIds != null && !categoryIds.isEmpty()) {
+	        hql.append(" AND p.category.id IN :categoryIds");
+	    }
+
+	    var query = sessionFactory.getCurrentSession().createQuery(hql.toString(), Product.class);
+
+	    if (keyword != null && !keyword.trim().isEmpty()) {
+	        query.setParameter("keyword", "%" + keyword.trim() + "%");
+	    }
+	    if (categoryIds != null && !categoryIds.isEmpty()) {
+	        query.setParameterList("categoryIds", categoryIds);
+	    }
+
+	    query.setFirstResult((page - 1) * pageSize);
+	    query.setMaxResults(pageSize);
+	    return query.getResultList();
+	}
+
+	@Override
+	public int countProductsByNameAndCategory(String keyword, List<Long> categoryIds) {
+	    StringBuilder hql = new StringBuilder("SELECT COUNT(p) FROM Product p WHERE 1=1");
+
+	    if (keyword != null && !keyword.trim().isEmpty()) {
+	        hql.append(" AND p.name LIKE :keyword");
+	    }
+	    if (categoryIds != null && !categoryIds.isEmpty()) {
+	        hql.append(" AND p.category.id IN :categoryIds");
+	    }
+
+	    var query = sessionFactory.getCurrentSession().createQuery(hql.toString(), Long.class);
+
+	    if (keyword != null && !keyword.trim().isEmpty()) {
+	        query.setParameter("keyword", "%" + keyword.trim() + "%");
+	    }
+	    if (categoryIds != null && !categoryIds.isEmpty()) {
+	        query.setParameterList("categoryIds", categoryIds);
+	    }
+
+	    Long count = query.uniqueResult();
+	    return count != null ? count.intValue() : 0;
+	}
+
+
 }
