@@ -12,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class OrderController {
      * 顯示顧客所有訂單
      * 若使用者為登入導回登入畫面
      *
-     * @param session HttpSession，用於取得已登入使用者
+     * @param userDetails	用於取得已登入使用者
      * @param model Spring MVC Model，用於傳遞資料到模板
      * @return 返回訂單頁面
      */
@@ -67,28 +68,24 @@ public class OrderController {
      * 建立訂單時確認商品庫存並
      *
      * @param selectedProductIds 用於取得以選取商品ID
-     * @param session HttpSession，用於取得已登入使用者
+     * @param userDetails	用於取得已登入使用者
      * @param model Spring MVC Model，用於傳遞資料到模板
      * @return 返回成功頁面
      */
     @PostMapping("/create")
-    public String createOrder(@AuthenticationPrincipal CustomUserDetails userDetails,@RequestParam(value="selectedProducts", required=false) List<Long> selectedProductIds,HttpSession session, Model model) {
+    public String createOrder(@AuthenticationPrincipal CustomUserDetails userDetails,@RequestParam(value="selectedProducts", required=false) List<Long> selectedProductIds,HttpSession session, Model model,RedirectAttributes redirectAttributes) {
     	User user = (User) userDetails.getUser();
         Customer customer = customerService.getCustomerByUserId(user.getId());
 
         // 如果沒有選擇任何商品
         if (selectedProductIds == null || selectedProductIds.isEmpty()) {
-            model.addAttribute("error", "請至少選擇一個商品建立訂單！");
-            return "cart";
+            redirectAttributes.addFlashAttribute("error", "請至少選擇一個商品建立訂單！");
+            return "redirect:/cart";
         }
 
         try {
-            String customerName = customer.getName();
-
-            // 呼叫 Service 建立訂單，只傳入被勾選的商品
             Order order = orderService.createOrder(customer.getId(), selectedProductIds);
 
-            model.addAttribute("customerName", customerName);
             model.addAttribute("order", order);
             return "redirect:/orders/" + order.getId();
         } catch (RuntimeException e) {
@@ -102,7 +99,7 @@ public class OrderController {
      *
      *
      * @param id 訂單 ID
-     * @param session HttpSession，用於取得已登入使用者
+     * @param userDetails	用於取得已登入使用者
      * @param model Spring MVC Model，用於傳遞資料到模板
      * @return 返回訂單詳情頁面 "order-detail"，或訂單不屬於該客戶時導向 "/orders"
      */
@@ -121,7 +118,7 @@ public class OrderController {
     /**
      * 對訂單進行付款
      * @param id 訂單 ID
-     * @param session HttpSession，用於取得已登入使用者
+     * @param userDetails	用於取得已登入使用者
      * @param model Spring MVC Model，用於傳遞資料到模板
      * @return 訂單成立後返回訂單列表
      */
@@ -145,7 +142,7 @@ public class OrderController {
     /**
      * 對訂單進行取消
      * @param id 訂單 ID
-     * @param session HttpSession，用於取得已登入使用者
+     * @param userDetails	用於取得已登入使用者
      * @param model Spring MVC Model，用於傳遞資料到模板
      * @return 訂單取消後返回訂單列表
      */

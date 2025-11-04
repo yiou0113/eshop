@@ -64,6 +64,7 @@ public class OrderServiceImpl implements OrderService {
 		List<CartItem> selectedItems = cart.getItems().stream()
 				.filter(item -> selectedProductIds.contains(item.getProduct().getId())).collect(Collectors.toList());
 		if (selectedItems.isEmpty()) {
+			logger.warn("[Order Log] 顧客ID {} 未選擇商品建立訂單。", customerId);
 			throw new RuntimeException("未選擇任何商品建立訂單");
 		}
 		Order order = new Order();
@@ -73,10 +74,13 @@ public class OrderServiceImpl implements OrderService {
 
 		for (CartItem cartItem : selectedItems) {
 			Product product = productDAO.findById(cartItem.getProduct().getId());
-			if (product == null)
+			if (product == null){
+	            logger.error("[Order Log] 顧客ID {} 嘗試下單，但商品ID {} 不存在。", customerId, cartItem.getProduct().getId());
 				throw new RuntimeException("商品不存在");
+			}
 			boolean success = productDAO.reduceStock(cartItem.getProduct().getId(), cartItem.getQuantity());
 			if (!success) {
+	            logger.warn("[Order Log] 顧客ID {} 嘗試下單，商品 {} 庫存不足。", customerId, product.getName());
 				throw new RuntimeException("庫存不足");
 			}
 
@@ -98,7 +102,12 @@ public class OrderServiceImpl implements OrderService {
 
 		cart.getItems().removeIf(item -> selectedProductIds.contains(item.getProduct().getId()));
 		cartDAO.save(cart);
-
+		logger.info("[Order Log] 顧客ID {} 成功建立訂單ID {}，商品數量 {}，總價 {}",
+	            customerId,
+	            order.getId(),
+	            order.getItems().size(),
+	            order.getTotalAmount());
+		
 		return order;
 	}
 
@@ -178,7 +187,11 @@ public class OrderServiceImpl implements OrderService {
 			productDAO.save(product);
 		}
 		order.setStatus("訂單取消");
-		orderDAO.save(order); // 或使用 Hibernate session.update(order)
+		orderDAO.save(order);
+		logger.info("[Order Log] 顧客ID {} 訂單ID {} 已取消，總價 {}",
+	            order.getCustomer().getId(),
+	            order.getId(),
+	            order.getTotalAmount());
 	}
 
 	/**
@@ -190,7 +203,11 @@ public class OrderServiceImpl implements OrderService {
 	public void payOrder(Long orderId) {
 		Order order = getOrderById(orderId);
 		order.setStatus("付款完畢");
-		orderDAO.save(order); // 或 session.update(order)
+		orderDAO.save(order); 
+		logger.info("[Order Log] 顧客ID {} 訂單ID {} 已付款，總價 {}",
+	            order.getCustomer().getId(),
+	            order.getId(),
+	            order.getTotalAmount());
 	}
 
 }

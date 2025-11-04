@@ -19,7 +19,7 @@ import java.util.List;
  *  - 根據 ID 查詢商品 
  *  - 新增商品 
  *  - 刪除商品 
- *  - 分頁取得商品清單
+ *  - 分頁關鍵字查詢及分類取得商品清單
  */
 @Service
 @Transactional
@@ -69,7 +69,16 @@ public class ProductServiceImpl implements ProductService {
 	public void deleteProduct(Long id) {
 		productDAO.delete(id);
 	}
-
+	
+	/**
+	 * 根據關鍵字與分類查詢商品，並支援分頁。
+	 *
+	 * @param keyword    搜尋關鍵字，可為商品名稱或部分名稱
+	 * @param categoryId 商品分類 ID，可為 null，若指定則包含子分類商品
+	 * @param page       分頁頁碼，從 1 開始
+	 * @param pageSize   每頁顯示的商品數量
+	 * @return 查詢到的商品列表
+	 */
 	@Override
 	public List<Product> searchProductsByNameAndCategoryWithPage(String keyword, Long categoryId, int page, int pageSize) {
 	    List<Long> categoryIds = null;
@@ -78,7 +87,14 @@ public class ProductServiceImpl implements ProductService {
 	    }
 	    return productDAO.searchProductsByNameAndCategoryWithPage(keyword, categoryIds, page, pageSize);
 	}
-
+	
+	/**
+	 * 根據關鍵字與分類統計符合條件的商品數量。
+	 *
+	 * @param keyword    搜尋關鍵字，可為商品名稱或部分名稱
+	 * @param categoryId 商品分類 ID，可為 null，若指定則包含子分類商品
+	 * @return 符合條件的商品總數
+	 */
 	@Override
 	public int countProductsByNameAndCategory(String keyword, Long categoryId) {
 	    List<Long> categoryIds = null;

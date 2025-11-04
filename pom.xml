@@ -158,6 +158,19 @@
 			<artifactId>jakarta.el</artifactId>
 			<version>3.0.4</version>
 		</dependency>
+		<!-- Spring AOP -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aspects</artifactId>
+			<version>5.3.29</version> <!-- 根據你的 Spring 版本調整 -->
+		</dependency>
+
+		<!-- AspectJ runtime -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>1.9.23</version>
+		</dependency>
 
 
 	</dependencies>

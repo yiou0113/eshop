@@ -4,14 +4,14 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 public class LoginDTO {
-	@NotBlank(message="Email 未填寫")
-    @Email(message="Email 格式錯誤")
-    private String email;
+	@NotBlank(message = "Email 未填寫")
+	@Email(message = "Email 格式錯誤")
+	private String email;
 
-    @NotBlank(message="密碼未填寫")
-    private String password;
-    
-    // getter / setter
+	@NotBlank(message = "密碼未填寫")
+	private String password;
+
+	// getter / setter
 	public String getEmail() {
 		return email;
 	}
@@ -27,6 +27,5 @@ public class LoginDTO {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-
 
 }

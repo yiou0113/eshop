@@ -10,13 +10,14 @@
 <body>
 	<div class="container mt-5 col-md-4">
 		<h2 class="mb-4 text-center" th:text="#{login.header}">登入</h2>
-
-		<!-- 顯示錯誤訊息 -->
-		<div th:if="${error}" class="alert alert-danger" th:text="${error}">帳號或密碼錯誤</div>
-
-		<!-- 顯示登出成功訊息 -->
-		<div th:if="${param.logout}" class="alert alert-success"
-			th:text="#{login.logout}">您已成功登出</div>
+		<div th:if="${message}" id="flashMessageSuccess"
+			class="alert alert-success" role="alert">
+			<span th:text="${message}"></span>
+		</div>
+		<div th:if="${error}" id="flashMessageError"
+			class="alert alert-danger" role="alert">
+			<span th:text="${error}"></span>
+		</div>
 
 		<!-- 登入表單 -->
 		<form th:action="@{/login}" method="post">
@@ -52,5 +53,22 @@
 				th:href="@{/login(lang='en')}">English</a>
 		</div>
 	</div>
+
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+    function autoFadeOut(element) {
+        if (!element) return;
+        setTimeout(() => {
+            element.style.transition = 'opacity 0.5s ease';
+            element.style.opacity = '0';
+            setTimeout(() => element.remove(), 500);
+        }, 2500);
+    }
+
+    autoFadeOut(document.getElementById('flashMessageSuccess'));
+    autoFadeOut(document.getElementById('flashMessageError'));
+});
+</script>
+
 </body>
 </html>

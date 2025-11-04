@@ -35,7 +35,7 @@ public class CartController {
      * 顯示目前使用者的購物車內容。
      * 若使用者未登入，則會導向登入頁面。
      *
-     * @param session  用來取得目前登入的使用者資訊
+     * @param userDetails  用來取得目前登入的使用者資訊
      * @param model    用來將購物車資料傳遞給前端頁面
      * @return         回傳到 cart.html 顯示購物車畫面
      */
@@ -68,7 +68,7 @@ public class CartController {
      *
      * @param productId 商品 ID
      * @param quantity  購買數量
-     * @param session   用於取得登入的使用者
+     * @param userDetails   用於取得登入的使用者
      * @param redirectAttributes 用於給予錯誤訊息
      * @return	導回產品列表頁面
      */
@@ -94,7 +94,7 @@ public class CartController {
      *
      * @param productId 商品 ID
      * @param quantity  新數量
-     * @param session   用於取得登入的使用者
+     * @param userDetails   用於取得登入的使用者
      * @param redirectAttributes 用於給予錯誤訊息
      * @return 導回購物車頁面
      */
@@ -121,7 +121,7 @@ public class CartController {
      * 若未登入則導向登入頁面。
      *
      * @param productId 商品 ID
-     * @param session   用於取得登入的使用者
+     * @param userDetails   用於取得登入的使用者
      * @return 導回購物車頁面
      */
 	@PostMapping("/remove")

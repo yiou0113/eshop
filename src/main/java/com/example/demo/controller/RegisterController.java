@@ -16,13 +16,10 @@ import org.springframework.web.bind.annotation.*;
  * 此控制器負責處理「顧客註冊」相關的 HTTP 請求，
  * 包含顯示註冊表單（GET）與處理註冊提交（POST）。
  *
- * 使用 {@code @Controller} 表示此類別為 Spring MVC 的控制器，
- * 可返回 Thymeleaf 等模板頁面。
  */
 @Controller
 public class RegisterController {
 	
-	/** 注入 CustomerService，用於處理顧客註冊的業務邏輯 */
     @Autowired
     private CustomerService customerService;
     
@@ -32,7 +29,7 @@ public class RegisterController {
      * 當使用者訪問 `/register` 時（GET 請求），
      * 系統會返回註冊表單頁面 `register.html`。
      *
-     * @return 返回註冊頁面的檔名（Thymeleaf 模板）
+     * @return 返回註冊頁面"register"
      */
     @GetMapping("/register")
     public String showRegisterForm(Model model) {
@@ -50,7 +47,7 @@ public class RegisterController {
      * @param password 使用者密碼
      * @param phone    使用者電話
      * @param address  使用者地址
-     * @return 導向至登入頁面 `/login`
+     * @return 導向至登入頁面 "/login"
      */
     @PostMapping("/register")
     public String register(

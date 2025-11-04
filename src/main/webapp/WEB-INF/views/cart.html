@@ -116,24 +116,20 @@ table {
 
 	</div>
 
-	<script>
-    // 取得 alert 元素
-    const flashSuccess = document.getElementById('flashMessageSuccess');
-    if (flashSuccess) {
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+    function autoFadeOut(element) {
+        if (!element) return;
         setTimeout(() => {
-            flash.style.transition = 'opacity 0.5s ease';
-            flash.style.opacity = '0';
-            setTimeout(() => flash.remove(), 500);
+            element.style.transition = 'opacity 0.5s ease';
+            element.style.opacity = '0';
+            setTimeout(() => element.remove(), 500);
         }, 2500);
     }
-    const flashError = document.getElementById('flashMessageError');
-    if (flashError) {
-        setTimeout(() => {
-            flash.style.transition = 'opacity 0.5s ease';
-            flash.style.opacity = '0';
-            setTimeout(() => flash.remove(), 500);
-        }, 2500);
-    }
+
+    autoFadeOut(document.getElementById('flashMessageSuccess'));
+    autoFadeOut(document.getElementById('flashMessageError'));
+});
 </script>
 </body>
 </html>

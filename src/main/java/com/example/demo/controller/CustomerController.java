@@ -36,7 +36,7 @@ public class CustomerController {
 	/**
 	 * 列出客戶個人資訊
 	 * 
-	 * @param session 用來取得目前登入的使用者資訊
+	 * @param userDetails 用來取得目前登入的使用者資訊
 	 * @param model	用來將資訊傳道前端
 	 * @return	回傳道customer-profile頁面
 	 */
@@ -63,7 +63,8 @@ public class CustomerController {
 	 * 驗證密碼是否正確
 	 * 
 	 * @param password 	使用者輸入密碼進行比對
-	 * @param session	用來取得目前登入的使用者資訊與密碼輸入正確存入資訊
+	 * @param session	用來存入密碼輸入正確資訊
+	 * @param userDetails 用來取得目前登入的使用者資訊
 	 * @param redirectAttributes	用於給予錯誤訊息
 	 * @return	導回修改密碼頁面
 	 */
@@ -100,7 +101,8 @@ public class CustomerController {
 	/**
 	 * 讓使用者更新密碼
 	 * @param password	使用者輸入想更改的密碼
-	 * @param session	用來取得目前登入的使用者資訊與密碼輸入正確資訊
+	 * @param session	用來取得密碼輸入正確資訊
+	 * @param userDetails	用來取得目前登入的使用者資訊
 	 * @param redirectAttributes	用於給予錯誤訊息
 	 * @return	導回個人資訊頁面
 	 */
@@ -139,7 +141,7 @@ public class CustomerController {
 	 * 更新使用者個人資訊
 	 * 
 	 * @param customer	取得客戶資訊
-	 * @param session	用來取得目前登入的使用者資訊
+	 * @param userDetails	用來取得目前登入的使用者資訊
 	 * @param redirectAttributes	用於給予錯誤訊息
 	 * @return	導回個人資訊頁面
 	 */

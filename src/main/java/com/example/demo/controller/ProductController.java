@@ -37,14 +37,16 @@ public class ProductController {
 	private CustomerService customerService;
 
 	/**
-	 * 顯示商品列表（支援分頁）
+	 * 顯示商品列表
 	 *
 	 * 當使用者訪問 /products 時，會顯示商品列表頁面， 每頁顯示固定數量(目前設定為12)的商品，並計算總頁數。
 	 *
+	 * @param userDetails	用來取得目前使用者資訊
 	 * @param page       目前頁碼，預設為 1
 	 * @param categoryId 目前選取分類
+	 * @param keyword	 目前使用者輸入查詢條件
 	 * @param model      用於傳遞資料到前端
-	 * @return 返回商品列表的模板名稱 "product-list" 對應 product-list.html
+	 * @return 返回商品列表 "product-list" 
 	 */
 	@GetMapping
 	public String listProducts(@AuthenticationPrincipal CustomUserDetails userDetails,
@@ -60,8 +62,7 @@ public class ProductController {
 		}
 		
 
-		// 用三層分類結構
-		List<Category> categoryTree = categoryService.getThreeLevelCategories();
+		
 		if (userDetails != null) {
 			User user = userDetails.getUser();
 			Customer customer = null;
@@ -71,6 +72,9 @@ public class ProductController {
 				model.addAttribute("customer", customer);
 			}
 		}
+		// 用三層分類結構
+		List<Category> categoryTree = categoryService.getThreeLevelCategories();
+		
 		model.addAttribute("products", products);
 		model.addAttribute("currentPage", page);
 		model.addAttribute("totalPages", totalPages);
