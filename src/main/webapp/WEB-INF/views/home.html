@@ -1,18 +1,62 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<!-- #{} → 表示「從 MessageSource 取值（國際化訊息）」-->
-<title th:text="#{home.title}">Welcome</title>
-</head>
-<body>
-	<h1 th:text="#{home.message}">Hello</h1>
-	<a th:href="@{/login}" class="btn btn-primary"
-		th:text="#{button.login}">Login</a>
+<title th:text="#{home.title}">E-Shop</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link rel="stylesheet" th:href="@{/resources/css/style.css}" />
+<style>
+h1 {
+	font-size: 2.5rem;
+	font-weight: 600;
+	color: #2c3e50;
+	margin-top: 2rem;
+}
 
-	<hr>
-	<a th:href="@{/?lang=en}">English</a> |
-	<a th:href="@{/?lang=zh_TW}">繁體中文</a>
+.main-content {
+	flex-grow: 1; /* 讓中間區塊可垂直置中 */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.btn-group-custom {
+	display: flex;
+	gap: 1rem;
+}
+
+.language-switch {
+	position: fixed;
+	bottom: 15px;
+	right: 15px;
+	background: white;
+	border-radius: 6px;
+	box-shadow: 0 0.3rem 0.8rem rgba(0, 0, 0, 0.1);
+	padding: 8px 12px;
+	font-size: 0.9rem;
+}
+</style>
+</head>
+
+<body>
+	<!-- 頂部中央 -->
+	<h1 th:text="#{home.message}">歡迎光臨 E-Shop</h1>
+
+	<!-- 正中央按鈕區 -->
+	<div class="main-content">
+		<div class="btn-group-custom">
+			<a th:href="@{/login}" class="btn btn-primary"
+				th:text="#{button.login}">登入</a> <a th:href="@{/products}"
+				class="btn btn-outline-primary" th:text="#{button.browseProducts}">瀏覽商品</a>
+		</div>
+	</div>
+
+	<!-- 語言切換 -->
+	<div class="language-switch">
+		🌐 <a th:href="@{/?lang=en}" class="me-2">English</a> | <a
+			th:href="@{/?lang=zh_TW}" class="ms-2">繁體中文</a>
+	</div>
 </body>
 </html>
-

@@ -91,6 +91,7 @@ public class PasswordResetController {
 		// 取得使用者
 		PasswordResetToken resetToken = tokenService.getByToken(token);
 		User user = resetToken.getUser();
+		user.setPassword(password);
 		userService.updateUser(user.getId(), user);
 		tokenService.removeExpiredTokens();
 
