@@ -129,5 +129,8 @@ public class CategoryServiceImpl implements CategoryService {
             fetchChildren(child.getId(), result);
         }
     }
-
+    @Override
+    public List<Category> getAllLeafCategories() {
+        return categoryDAO.findAllLeafCategories();
+    }
 }

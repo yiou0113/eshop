@@ -63,9 +63,4 @@ public class RegisterDTO {
 	public void setAddress(String address) {
 		this.address = address;
 	}
-
-
-    
-    
-    
 }

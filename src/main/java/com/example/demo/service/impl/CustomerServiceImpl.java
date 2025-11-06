@@ -50,6 +50,7 @@ public class CustomerServiceImpl implements CustomerService {
 		User user = new User();
 		user.setEmail(email);
 		user.setPassword(encodedPassword);
+		user.setRole("USER");
 		// user.setRole("ROLE_USER");
 
 		// --- 建立 Customer ---

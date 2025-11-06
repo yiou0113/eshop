@@ -10,9 +10,9 @@ import com.example.demo.model.Cart;
  */
 public interface CartService {
 
-    void addToCart(Long userId, Long productId, int quantity);
+    void addToCart(Long customerId, Long productId, int quantity);
 
-    BigDecimal getCartTotal(Long userId);
+    BigDecimal getCartTotal(Long customerId);
 
     void removeItem(Long customerId, Long productId);
 
@@ -26,5 +26,5 @@ public interface CartService {
     
     boolean isCartEmpty(Long customerId);
     
-    boolean addToCart(Long productId, int quantity);
+    boolean checkStockBeforeAdd(Long productId, int quantity);
 }

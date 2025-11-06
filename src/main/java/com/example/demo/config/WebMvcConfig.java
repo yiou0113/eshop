@@ -8,6 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -58,6 +59,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/resources/**")
                 .addResourceLocations("/resources/");
+        registry.addResourceHandler("/uploads/**")
+        .addResourceLocations("file:/home/yiou/shop_uploads/images/products/");
     }
     // ------------------------------
     // 國際化 (i18n) 設定
@@ -92,6 +95,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(customerInterceptor)
         .addPathPatterns("/cart/**", "/order/**", "/user/**"); // 只有需要會員資料的功能
     }
-
+    @Bean
+    public CommonsMultipartResolver multipartResolver() {
+        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+        resolver.setDefaultEncoding("UTF-8");
+        resolver.setMaxUploadSize(5 * 1024 * 1024); // 5MB
+        return resolver;
+    }
     
 }

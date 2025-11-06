@@ -23,4 +23,6 @@ public interface CategoryService {
 	List<Category> getThreeLevelCategories();
 	
 	List<Long> getAllChildCategoryIds(Long categoryId);
+	
+    List<Category> getAllLeafCategories();
 }

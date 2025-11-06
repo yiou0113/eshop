@@ -79,7 +79,7 @@ public class CartController {
 		// 根據使用者 ID 查找對應的顧客資料
 		Customer customer = customerSecvice.getCustomerByUserId(user.getId());
 		//判斷購買數量是否符合庫存
-	    boolean success = cartService.addToCart(productId, quantity);
+	    boolean success = cartService.checkStockBeforeAdd(productId, quantity);
 	    if (!success) {
 	        redirectAttributes.addFlashAttribute("error", "購買數量不能超過庫存！");
 	        return "redirect:/products";
@@ -107,7 +107,7 @@ public class CartController {
 		// 根據使用者 ID 查找對應的顧客資料
 		Customer customer = customerSecvice.getCustomerByUserId(user.getId());
 		//判斷購買數量是否符合庫存
-		boolean success = cartService.addToCart(productId, quantity);
+		boolean success = cartService.checkStockBeforeAdd(productId, quantity);
 	    if (!success) {
 	        redirectAttributes.addFlashAttribute("error", "購買數量不能超過庫存！");
 	        return "redirect:/cart?userId=" + customer.getId();

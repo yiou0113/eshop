@@ -23,8 +23,10 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(() -> "USER"); // 固定角色
+        return List.of(() -> "ROLE_" + user.getRole());
     }
+
+
 
     @Override
     public String getPassword() {

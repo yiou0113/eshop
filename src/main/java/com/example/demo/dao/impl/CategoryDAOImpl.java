@@ -51,4 +51,18 @@ public class CategoryDAOImpl extends BaseDAOImpl<Category> implements CategoryDA
                     .list();
         }
     }
+    @Override
+    public List<Category> findAllLeafCategories() {
+        // 找出沒有子分類的分類
+        return getCurrentSession()
+                .createQuery(
+                    "FROM Category c " +
+                    "WHERE c.id NOT IN (" +
+                    "    SELECT DISTINCT c2.parent.id FROM Category c2 WHERE c2.parent IS NOT NULL" +
+                    ")",
+                    Category.class
+                )
+                .list();
+    }
+
 }

@@ -3,6 +3,8 @@ package com.example.demo.service;
 import com.example.demo.model.Product;
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 /**
  * ProductService 介面 — 定義商品（Product）相關的業務邏輯操作。
  *
@@ -22,5 +24,6 @@ public interface ProductService {
 	List<Product> searchProductsByNameAndCategoryWithPage(String keyword, Long categoryId, int page, int pageSize);
 
 	int countProductsByNameAndCategory(String keyword, Long categoryId);
-
+	
+	void addProduct(Product product, MultipartFile imageFile);
 }

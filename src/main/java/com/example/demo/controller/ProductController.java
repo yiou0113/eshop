@@ -70,6 +70,7 @@ public class ProductController {
 				// 若使用者已登入，才嘗試查詢 customer
 				customer = customerService.getCustomerByUserId(user.getId());
 				model.addAttribute("customer", customer);
+				model.addAttribute("role",user.getRole());
 			}
 		}
 		// 用三層分類結構

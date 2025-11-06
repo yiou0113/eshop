@@ -4,12 +4,5 @@ body {
     background: linear-gradient(135deg, #e3f2fd, #f1f8e9);
     min-height: 100vh; /* 讓背景延伸到整個視窗高度 */
 
-    /* 排版 */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; /* 頂部標題與中央按鈕間距 */
-    align-items: center;
-    font-family: 'Segoe UI', 'Noto Sans TC', sans-serif;
-    text-align: center;
-    padding: 40px 20px;
+
 }

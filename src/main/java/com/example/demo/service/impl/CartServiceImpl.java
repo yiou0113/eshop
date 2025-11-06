@@ -19,13 +19,7 @@ import com.example.demo.service.CartService;
 /**
  * CartService 的實作類別
  *
- * 此類別負責處理購物車相關的業務邏輯： 
- * - 新增商品至購物車 
- * - 計算購物車總金額 
- * - 移除購物車商品 
- * - 更新商品數量 
- * - 清空購物車 
- * - 根據顧客 ID
+ * 此類別負責處理購物車相關的業務邏輯： - 新增商品至購物車 - 計算購物車總金額 - 移除購物車商品 - 更新商品數量 - 清空購物車 - 根據顧客 ID
  * - 取得購物車
  */
 @Service
@@ -83,9 +77,10 @@ public class CartServiceImpl implements CartService {
 	@Override
 	public BigDecimal getCartTotal(Long customerId) {
 		Cart cart = cartDAO.findByCustomerId(customerId).orElseThrow();
-		return cart.getItems().stream().peek(CartItem::updateSubtotal) // 確保 subtotal 更新
-				.map(CartItem::getSubtotal) // 取得 BigDecimal
-				.reduce(BigDecimal.ZERO, BigDecimal::add);
+		return cart.getItems().stream()
+			    .map(CartItem::getSubtotal)
+			    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
 	}
 
 	/**
@@ -96,11 +91,9 @@ public class CartServiceImpl implements CartService {
 	 */
 	@Override
 	public void removeItem(Long customerId, Long productId) {
-		Cart cart = cartDAO.findByCustomerId(customerId).orElseThrow(); // 如果找不到會返回 null
-		if (cart == null) {
-			throw new RuntimeException("購物車不存在，無法刪除商品");
-		}
+		Cart cart = cartDAO.findByCustomerId(customerId).orElseThrow(() -> new RuntimeException("購物車不存在"));
 		cartDAO.deleteByCartIdAndProductId(cart.getId(), productId);
+
 	}
 
 	/**
@@ -130,16 +123,13 @@ public class CartServiceImpl implements CartService {
 	 */
 	@Override
 	public Cart createCartForCustomer(Long customerId) {
-		// 取得 Customer，若找不到拋例外
-		Customer customer = customerDAO.findById(customerId);
-
-		Cart cart = new Cart();
-		cart.setCustomer(customer);
-
-		// 儲存 Cart
-		cartDAO.save(cart);
-
-		return cart;
+		return cartDAO.findByCustomerId(customerId).orElseGet(() -> {
+			Customer customer = customerDAO.findById(customerId);
+			Cart cart = new Cart();
+			cart.setCustomer(customer);
+			cartDAO.save(cart);
+			return cart;
+		});
 	}
 
 	/**
@@ -164,34 +154,37 @@ public class CartServiceImpl implements CartService {
 	 */
 	@Override
 	public Cart getCartByCustomerId(Long customerId) {
-		Cart cart = cartDAO.findByCustomerId(customerId).orElseGet(() -> createCartForCustomer(customerId));
-		cart.getItems().size(); // 強制初始化 items list，避免 lazy load 問題
-		return cart;
-		
+		Cart cart = createCartForCustomer(customerId);
+	    cart.getItems().size(); // 初始化 items
+	    return cart;
 	}
+
+
 	/**
 	 * 判斷購物車是否為空
-	 * @param customerId	顧客Id
-	 * @return	true或false
+	 * 
+	 * @param customerId 顧客Id
+	 * @return true或false
 	 */
 	@Override
 	public boolean isCartEmpty(Long customerId) {
-	    Cart cart = getCartByCustomerId(customerId);
-	    return cart == null || cart.getItems() == null || cart.getItems().isEmpty();
+		Cart cart = getCartByCustomerId(customerId);
+		return cart.getItems().isEmpty();
 	}
+
 	/**
 	 * 判斷商品庫存量是否足夠購買
 	 * 
 	 * @return true或false
 	 */
 	@Override
-	public boolean addToCart(Long productId, int quantity) {
-	    Product product = productDAO.findById(productId);
-	    if (product == null || quantity > product.getStock()) {
-	        return false; // 超過庫存或商品不存在
-	    }
+	public boolean checkStockBeforeAdd(Long productId, int quantity) {
+		Product product = productDAO.findById(productId);
+		if (product == null || quantity > product.getStock()) {
+			return false; // 超過庫存或商品不存在
+		}
 
-	    return true;
+		return true;
 	}
 
 }

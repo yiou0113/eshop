@@ -23,4 +23,6 @@ import com.example.demo.model.Category;
  */
 public interface CategoryDAO extends BaseDAO<Category> {
 	List<Category> findByParentId(Long parentId);
+	
+    List<Category> findAllLeafCategories();
 }

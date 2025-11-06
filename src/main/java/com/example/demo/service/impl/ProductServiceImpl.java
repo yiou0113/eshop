@@ -7,7 +7,12 @@ import com.example.demo.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * ProductService 的實作類別
@@ -29,6 +34,7 @@ public class ProductServiceImpl implements ProductService {
 	private ProductDAO productDAO;
 	@Autowired
 	private CategoryService categoryService;
+	private static final String UPLOAD_DIR = "/home/yiou/shop_uploads/images/products/";
 	/**
 	 * 取得所有商品清單
 	 *
@@ -103,5 +109,26 @@ public class ProductServiceImpl implements ProductService {
 	    }
 	    return productDAO.countProductsByNameAndCategory(keyword, categoryIds);
 	}
+	@Override
+    public void addProduct(Product product, MultipartFile imageFile) {
+        if (imageFile != null && !imageFile.isEmpty()) {
+            try {
+                // 產生唯一檔名
+                String fileName = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
+                File dest = new File(UPLOAD_DIR + fileName);
 
+                // 確保資料夾存在
+                dest.getParentFile().mkdirs();
+                imageFile.transferTo(dest);
+
+                // 設定圖片路徑（相對於靜態資源映射）
+                product.setImageUrl("/uploads/" + fileName);
+
+            } catch (IOException e) {
+                throw new RuntimeException("圖片上傳失敗", e);
+            }
+        }
+
+        productDAO.save(product);
+    }
 }
