@@ -109,6 +109,12 @@ public class ProductServiceImpl implements ProductService {
 	    }
 	    return productDAO.countProductsByNameAndCategory(keyword, categoryIds);
 	}
+	/**
+	 * 新增商品與上傳圖片
+	 * 
+	 * @param product 新增商品物件
+	 * @param imageFile 新增圖片檔案
+	 */
 	@Override
     public void addProduct(Product product, MultipartFile imageFile) {
         if (imageFile != null && !imageFile.isEmpty()) {

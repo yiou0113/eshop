@@ -129,6 +129,9 @@ public class CategoryServiceImpl implements CategoryService {
             fetchChildren(child.getId(), result);
         }
     }
+    /**
+     * 取得所有最底層分類
+     */
     @Override
     public List<Category> getAllLeafCategories() {
         return categoryDAO.findAllLeafCategories();

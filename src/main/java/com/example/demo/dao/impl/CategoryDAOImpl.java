@@ -51,6 +51,9 @@ public class CategoryDAOImpl extends BaseDAOImpl<Category> implements CategoryDA
                     .list();
         }
     }
+    /**
+     * 取得所有最底層分類
+     */
     @Override
     public List<Category> findAllLeafCategories() {
         // 找出沒有子分類的分類
